@@ -42,7 +42,7 @@ public class Ventana extends JFrame {
         // lo que van a hacer cuando se presionen los botones
         btnCola.addActionListener(e -> cardLayout.show(panelContenedor, "Cola"));
         btnPila.addActionListener(e -> cardLayout.show(panelContenedor, "Pila"));
-        btnLista.addActionListener(e -> System.out.println("Boton Lista Dinamica presionado"));
+        btnLista.addActionListener(e -> cardLayout.show(panelContenedor, "Lista"));
 
         // ponemos todos los botones de el mismo tamaño
         Dimension tamanoBtn = new Dimension(800, 20000);
@@ -64,6 +64,7 @@ public class Ventana extends JFrame {
         panelContenedor.add(ventanaPrincipal, "Menu");
         panelContenedor.add(new panelPila(this), "Pila");
         panelContenedor.add(new panelCola(this), "Cola");
+        panelContenedor.add(new panelLista(this), "Lista");
 
         this.add(panelContenedor);
 
