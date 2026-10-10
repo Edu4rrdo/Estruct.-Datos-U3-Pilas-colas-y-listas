@@ -62,9 +62,9 @@ public class Ventana extends JFrame {
 
         // agregado de paneles a el panel contenedor
         panelContenedor.add(ventanaPrincipal, "Menu");
-        panelContenedor.add(new panelPila(this), "Pila");
-        panelContenedor.add(new panelColaForm(this), "Cola");
-        panelContenedor.add(new panelLista(this), "Lista");
+        panelContenedor.add(new PanelPila(this), "Pila");
+        panelContenedor.add(new PanelColaForm(this), "Cola");
+        panelContenedor.add(new PanelLista(this), "Lista");
 
         this.add(panelContenedor);
 
