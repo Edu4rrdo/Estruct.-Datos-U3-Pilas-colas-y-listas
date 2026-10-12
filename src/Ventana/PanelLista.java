@@ -37,15 +37,15 @@ public class PanelLista extends javax.swing.JPanel {
 
         setPreferredSize(new java.awt.Dimension(1920, 1080));
 
-        jButton1.setText("jButton1");
+        jButton1.setText("Lista Simple");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
-        jButton2.setText("jButton2");
+        jButton2.setText("Lista Doblemente Ligada");
 
-        jButton3.setText("jButton3");
+        jButton3.setText("Lista Circular Simple");
         jButton3.setMaximumSize(new java.awt.Dimension(90, 20));
 
-        jButton4.setText("jButton4");
+        jButton4.setText("Lista Circular Doblemente Ligada");
         jButton4.addActionListener(this::jButton4ActionPerformed);
 
         jLabel1.setFont(new java.awt.Font("Monospaced", 1, 24)); // NOI18N
