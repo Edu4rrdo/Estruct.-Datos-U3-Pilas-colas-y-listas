@@ -49,7 +49,7 @@ public class PanelLista extends javax.swing.JPanel {
         jButton4.addActionListener(this::jButton4ActionPerformed);
 
         jLabel1.setFont(new java.awt.Font("Monospaced", 1, 24)); // NOI18N
-        jLabel1.setText("Elige un tipo de lista");
+        jLabel1.setText("Elige un tipo de lista:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

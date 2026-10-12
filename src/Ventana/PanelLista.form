@@ -94,7 +94,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Monospaced" size="24" style="1"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Elige un tipo de lista"/>
+        <Property name="text" type="java.lang.String" value="Elige un tipo de lista:"/>
       </Properties>
     </Component>
   </SubComponents>
