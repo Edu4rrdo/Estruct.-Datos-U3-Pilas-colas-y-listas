@@ -3,7 +3,7 @@ package ListasDinamicas;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListaDoblementeLigada implements ListaDinamica {
+public class ListaDoblementeLigada extends ListaDinamica {
 
     private static class Nodo {
         int info;

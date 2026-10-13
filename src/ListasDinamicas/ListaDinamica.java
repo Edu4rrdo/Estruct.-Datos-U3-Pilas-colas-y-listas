@@ -2,25 +2,38 @@ package ListasDinamicas;
 
 import java.util.List;
 
-// Interfaz comun para los 4 tipos de lista.
-// Asi un solo panel grafico puede trabajar con cualquiera de ellas.
-public interface ListaDinamica {
+/**
+ * Clase Padre Abstracta para todas las Listas Dinamicas.
+ *
+ * Sirve como base comun para:
+ * 1. Lista Ligada Simple
+ * 2. Lista Doblemente Ligada
+ * 3. Lista Circular Simple
+ * 4. Lista Circular Doblemente Ligada
+ *
+ * Permite que la interfaz grafica (PanelTipoLista) trabaje con cualquier
+ * tipo de lista mediante polimorfismo.
+ *
+ * @author eduardo-b
+ */
+public abstract class ListaDinamica {
 
-    void insertarInicio(int valor);
+    // Metodos abstractos que cada lista enlazada implementa segun sus ligas
+    public abstract void insertarInicio(int valor);
 
-    void insertarFinal(int valor);
+    public abstract void insertarFinal(int valor);
 
-    Integer eliminarInicio();   // regresa null si la lista esta vacia
+    public abstract Integer eliminarInicio();   // regresa null si la lista esta vacia
 
-    Integer eliminarFinal();    // regresa null si la lista esta vacia
+    public abstract Integer eliminarFinal();    // regresa null si la lista esta vacia
 
-    boolean eliminarValor(int valor);   // elimina la primera coincidencia
+    public abstract boolean eliminarValor(int valor);   // elimina la primera coincidencia
 
-    boolean buscar(int valor);
+    public abstract boolean buscar(int valor);
 
-    boolean estaVacia();
+    public abstract boolean estaVacia();
 
-    List<Integer> aLista();     // recorre la lista y regresa sus valores en orden
+    public abstract List<Integer> aLista();     // recorre la lista y regresa sus valores en orden
 
-    String descripcion();       // texto que explica como esta enlazada la lista
+    public abstract String descripcion();       // texto que explica como esta enlazada la lista
 }
