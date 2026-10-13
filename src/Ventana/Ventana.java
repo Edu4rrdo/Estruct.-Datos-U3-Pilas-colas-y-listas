@@ -1,5 +1,8 @@
 package Ventana;
 
+import Ventana.Paneles.PanelCola;
+import Ventana.Paneles.PanelPila;
+import Ventana.Paneles.PanelTipoLista;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -63,7 +66,7 @@ public class Ventana extends JFrame {
         // agregado de paneles a el panel contenedor
         panelContenedor.add(ventanaPrincipal, "Menu");
         panelContenedor.add(new PanelPila(this), "Pila");
-        panelContenedor.add(new PanelColaForm(this), "Cola");
+        panelContenedor.add(new PanelCola(this), "Cola");
         panelContenedor.add(new PanelLista(this), "Lista");
         
         
