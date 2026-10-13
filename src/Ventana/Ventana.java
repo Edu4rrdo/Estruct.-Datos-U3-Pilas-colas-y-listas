@@ -65,6 +65,17 @@ public class Ventana extends JFrame {
         panelContenedor.add(new PanelPila(this), "Pila");
         panelContenedor.add(new PanelColaForm(this), "Cola");
         panelContenedor.add(new PanelLista(this), "Lista");
+        
+        
+        // un panel por cada tipo de lista
+        panelContenedor.add(new PanelTipoLista(this, "Lista Ligada Simple",
+                new ListasDinamicas.ListaLigadaSimple(), " -> ", " -> null"), "ListaSimple");
+        panelContenedor.add(new PanelTipoLista(this, "Lista Doblemente Ligada",
+                new ListasDinamicas.ListaDoblementeLigada(), " <-> ", ""), "ListaDoble");
+        panelContenedor.add(new PanelTipoLista(this, "Lista Circular Simple",
+                new ListasDinamicas.ListaCircularSimple(), " -> ", "  (el ultimo regresa al primero)"), "ListaCircularSimple");
+        panelContenedor.add(new PanelTipoLista(this, "Lista Circular Doblemente Ligada",
+                new ListasDinamicas.ListaCircularDoblementeLigada(), " <-> ", "  (el ultimo se une con el primero)"), "ListaCircularDoble");
 
         this.add(panelContenedor);
 
