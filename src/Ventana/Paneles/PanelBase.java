@@ -101,32 +101,32 @@ public class PanelBase extends javax.swing.JPanel {
     }
 
     /**
-     * Dibuja los bloques visuales en el panel central de acuerdo a los elementos
-     * de la estructura lineal (Pila o Cola).
+     * Dibuja los nodos de la estructura lineal (Pila o Cola) de manera horizontal.
+     *
+     * Fundamentos Didacticos de Estructuras de Datos:
+     * 1. RECUADROS HORIZONTALES:
+     *    Los nodos se alinean de izquierda a derecha simulando el encadenamiento
+     *    lineal en memoria con punteros directos.
+     * 2. APUNTADORES EXTERNOS AFUERA DE LOS RECUADROS:
+     *    Variables de referencia externa como FRENTE y FINAL (en Colas) o TOPE y BASE
+     *    (en Pilas) no residen dentro del nodo, sino que apuntan a el desde el exterior.
+     *    Por ello, se posicionan arriba de los recuadros con indicadores '▼'.
+     * 3. CAMPO DE LIGA SIN LA PALABRA 'LIGA':
+     *    Dentro del recuadro se muestra unicamente el dato almacenado y el valor
+     *    del enlace: '•' (referencia activa hacia el siguiente nodo) o 'null'
+     *    (cuando no apunta a ningun otro nodo, indicando el fin de la estructura).
      */
     public void actualizarVista() {
         if (panelBloques == null) return;
         panelBloques.removeAll();
 
         if (estructura == null || estructura.estaVacia()) {
-            panelBloques.add(Box.createVerticalStrut(50));
             JLabel lblVacia = new JLabel("(La estructura esta vacia - Inserte elementos para visualizar los bloques)", SwingConstants.CENTER);
             lblVacia.setFont(new Font("SansSerif", Font.ITALIC, 18));
             lblVacia.setForeground(new Color(130, 130, 130));
-            lblVacia.setAlignmentX(Component.CENTER_ALIGNMENT);
             panelBloques.add(lblVacia);
         } else {
-            panelBloques.add(Box.createVerticalStrut(15));
             boolean esCola = (estructura instanceof Cola);
-
-            // Indicador superior (Tope para Pila o Frente para Cola)
-            JLabel lblIndicadorArriba = new JLabel(estructura.getIndicadorArriba(), SwingConstants.CENTER);
-            lblIndicadorArriba.setFont(new Font("SansSerif", Font.BOLD, 15));
-            lblIndicadorArriba.setForeground(esCola ? new Color(46, 125, 50) : new Color(13, 71, 161));
-            lblIndicadorArriba.setAlignmentX(Component.CENTER_ALIGNMENT);
-            panelBloques.add(lblIndicadorArriba);
-            panelBloques.add(Box.createVerticalStrut(10));
-
             List<Integer> elementos = estructura.aLista();
 
             for (int i = 0; i < elementos.size(); i++) {
@@ -134,63 +134,104 @@ public class PanelBase extends javax.swing.JPanel {
                 boolean esPrimero = (i == 0);
                 boolean esUltimo = (i == elementos.size() - 1);
 
-                if (i > 0) {
-                    panelBloques.add(Box.createVerticalStrut(6));
-                    JLabel flecha = crearFlechaLabel("↓");
-                    flecha.setAlignmentX(Component.CENTER_ALIGNMENT);
-                    panelBloques.add(flecha);
-                    panelBloques.add(Box.createVerticalStrut(6));
-                }
-
-                Color fondo, borde, texto;
-                String etiqueta;
+                // --- 1. APUNTADORES EXTERNOS (FUERA DE LOS RECUADROS) ---
+                String textoIndicador = " ";
+                Color colorIndicador = new Color(66, 66, 66);
 
                 if (esCola) {
-                    // Paleta de colores para Cola: Verde (Frente) a Naranja/Amarillo (Final)
+                    // En Cola: Frente es el proximo en salir, Final es el mas reciente
+                    if (esPrimero && esUltimo) {
+                        textoIndicador = "▼ FRENTE / FINAL";
+                        colorIndicador = new Color(46, 125, 50); // Verde oscuro
+                    } else if (esPrimero) {
+                        textoIndicador = "▼ FRENTE";
+                        colorIndicador = new Color(46, 125, 50); // Verde oscuro
+                    } else if (esUltimo) {
+                        textoIndicador = "▼ FINAL";
+                        colorIndicador = new Color(230, 81, 0);  // Naranja
+                    }
+                } else {
+                    // En Pila: Tope es la cima (LIFO), Base es el fondo
+                    if (esPrimero && esUltimo) {
+                        textoIndicador = "▼ TOPE / BASE";
+                        colorIndicador = new Color(13, 71, 161); // Azul oscuro
+                    } else if (esPrimero) {
+                        textoIndicador = "▼ TOPE";
+                        colorIndicador = new Color(13, 71, 161); // Azul oscuro
+                    } else if (esUltimo) {
+                        textoIndicador = "▼ BASE";
+                        colorIndicador = new Color(97, 97, 97);   // Gris neutro
+                    }
+                }
+
+                // Etiqueta del apuntador externo (situada fuera del recuadro)
+                JLabel lblIndicador = new JLabel(textoIndicador, SwingConstants.CENTER);
+                lblIndicador.setFont(new Font("SansSerif", Font.BOLD, 14));
+                lblIndicador.setForeground(colorIndicador);
+                lblIndicador.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                // --- 2. RECUADRO DEL NODO (SIN LA PALABRA 'LIGA', SOLO LA LIGA) ---
+                // Nodo con dos campos didacticos: [ Dato | Liga ]
+                // Si es el ultimo nodo, su liga es 'null'; de lo contrario, es el apuntador '•'
+                String etiqueta;
+                if (esUltimo) {
+                    etiqueta = "[ " + valor + " | null ]";
+                } else {
+                    etiqueta = "[ " + valor + " | • ]";
+                }
+
+                // Paleta de colores didactica para diferenciar nodos destacados
+                Color fondo, borde, texto;
+                if (esCola) {
                     fondo = esPrimero ? new Color(200, 230, 201) : (esUltimo ? new Color(255, 236, 179) : new Color(232, 245, 233));
                     borde = esPrimero ? new Color(56, 142, 60) : (esUltimo ? new Color(245, 127, 23) : new Color(129, 199, 132));
                     texto = esPrimero ? new Color(27, 94, 32) : (esUltimo ? new Color(191, 54, 12) : new Color(33, 33, 33));
-
-                    if (esPrimero && esUltimo) {
-                        etiqueta = "[ FRENTE / FINAL: " + valor + " | liga: null ]";
-                    } else if (esPrimero) {
-                        etiqueta = "[ FRENTE: " + valor + " | liga: ↓ ]";
-                    } else if (esUltimo) {
-                        etiqueta = "[ FINAL: " + valor + " | liga: null ]";
-                    } else {
-                        etiqueta = "[ DATO: " + valor + " | liga: ↓ ]";
-                    }
                 } else {
-                    // Paleta de colores para Pila: Azul fuerte (Tope) a Celeste (Base)
                     fondo = esPrimero ? new Color(187, 222, 251) : new Color(227, 242, 253);
                     borde = esPrimero ? new Color(25, 118, 210) : new Color(100, 181, 246);
                     texto = new Color(13, 71, 161);
-
-                    if (esPrimero && esUltimo) {
-                        etiqueta = "[ TOPE / BASE: " + valor + " | liga: null ]";
-                    } else if (esPrimero) {
-                        etiqueta = "[ TOPE: " + valor + " | liga: ↓ ]";
-                    } else if (esUltimo) {
-                        etiqueta = "[ BASE: " + valor + " | liga: null ]";
-                    } else {
-                        etiqueta = "[ DATO: " + valor + " | liga: ↓ ]";
-                    }
                 }
 
                 JLabel bloque = crearBloqueLabel(etiqueta, fondo, borde, texto);
-                bloque.setPreferredSize(new Dimension(360, 48));
-                bloque.setMaximumSize(new Dimension(360, 48));
-                panelBloques.add(bloque);
-            }
+                Dimension pref = bloque.getPreferredSize();
+                bloque.setPreferredSize(new Dimension(Math.max(140, pref.width + 16), 48));
+                bloque.setAlignmentX(Component.CENTER_ALIGNMENT);
+                bloque.setToolTipText("Nodo: Valor = " + valor + (esUltimo ? ", Liga = null" : ", Liga = siguiente nodo"));
 
-            // Indicador inferior (Base para Pila o Final para Cola)
-            panelBloques.add(Box.createVerticalStrut(12));
-            JLabel lblIndicadorAbajo = new JLabel(estructura.getIndicadorAbajo(), SwingConstants.CENTER);
-            lblIndicadorAbajo.setFont(new Font("SansSerif", Font.BOLD, 14));
-            lblIndicadorAbajo.setForeground(esCola ? new Color(230, 81, 0) : new Color(97, 97, 97));
-            lblIndicadorAbajo.setAlignmentX(Component.CENTER_ALIGNMENT);
-            panelBloques.add(lblIndicadorAbajo);
-            panelBloques.add(Box.createVerticalStrut(20));
+                // Contenedor vertical para cada elemento:
+                // Arriba: Apuntador externo (Frente / Final / Tope / Base)
+                // Abajo: Recuadro del nodo
+                javax.swing.JPanel nodoPanel = new javax.swing.JPanel();
+                nodoPanel.setLayout(new javax.swing.BoxLayout(nodoPanel, javax.swing.BoxLayout.Y_AXIS));
+                nodoPanel.setOpaque(false);
+                nodoPanel.add(lblIndicador);
+                nodoPanel.add(Box.createVerticalStrut(6));
+                nodoPanel.add(bloque);
+
+                // Agregar el nodo al panel de visualizacion horizontal
+                panelBloques.add(nodoPanel);
+
+                // --- 3. FLECHA DE ENLACE HORIZONTAL ENTRE RECUEADROS ---
+                if (!esUltimo) {
+                    javax.swing.JPanel flechaPanel = new javax.swing.JPanel();
+                    flechaPanel.setLayout(new javax.swing.BoxLayout(flechaPanel, javax.swing.BoxLayout.Y_AXIS));
+                    flechaPanel.setOpaque(false);
+
+                    // Espaciador superior para que la flecha quede nivelada exactamente con el recuadro
+                    JLabel spacer = new JLabel(" ");
+                    spacer.setFont(new Font("SansSerif", Font.BOLD, 14));
+                    spacer.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    flechaPanel.add(spacer);
+                    flechaPanel.add(Box.createVerticalStrut(6));
+
+                    JLabel flecha = crearFlechaLabel(" → ");
+                    flecha.setPreferredSize(new Dimension(40, 48));
+                    flecha.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    flechaPanel.add(flecha);
+
+                    panelBloques.add(flechaPanel);
+                }
+            }
         }
 
         panelBloques.revalidate();
@@ -304,7 +345,7 @@ public class PanelBase extends javax.swing.JPanel {
         jButton2.addActionListener(this::jButton2ActionPerformed);
 
         panelBloques.setBackground(new java.awt.Color(250, 250, 250));
-        panelBloques.setLayout(new javax.swing.BoxLayout(panelBloques, javax.swing.BoxLayout.Y_AXIS));
+        panelBloques.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 15, 20));
         jScrollPane1.setViewportView(panelBloques);
 
         jButton3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N

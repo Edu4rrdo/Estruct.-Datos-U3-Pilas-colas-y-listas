@@ -110,7 +110,68 @@ public class PanelTipoLista extends javax.swing.JPanel {
                             : (esUltimo ? new Color(123, 31, 162) : new Color(158, 158, 158));
                     Color texto = new Color(33, 33, 33);
 
-                    JLabel bloque = crearBloqueLabel("[ " + d + " ]", fondo, borde, texto);
+                    // Didactico - Estructura de Datos (Representacion de Nodos en Memoria):
+                    // 1. Identificar si la lista es circular o lineal (con extremos nulos).
+                    boolean esCircular = (lista instanceof ListasDinamicas.ListaCircularSimple)
+                            || (lista instanceof ListasDinamicas.ListaCircularDoblementeLigada)
+                            || (titulo != null && titulo.toLowerCase().contains("circular"));
+
+                    // 2. Identificar si la lista es doblemente ligada o ligada simple.
+                    boolean esDoble = (lista instanceof ListasDinamicas.ListaDoblementeLigada)
+                            || (lista instanceof ListasDinamicas.ListaCircularDoblementeLigada)
+                            || (titulo != null && titulo.toLowerCase().contains("doble"));
+
+                    String etiquetaNodo;
+                    String tooltipNodo;
+
+                    if (esDoble) {
+                        // LISTA DOBLEMENTE LIGADA:
+                        // Posee dos campos de liga: izquierda (anterior) y derecha (siguiente).
+                        if (esCircular) {
+                            // En la circular doble: todos los nodos estan enlazados con sus vecinos.
+                            etiquetaNodo = "[ • | " + d + " | • ]";
+                            tooltipNodo = "Nodo: Dato = " + d + " (Ligas Izq y Der enlazadas)";
+                        } else {
+                            // En la lista doblemente ligada simple (lineal):
+                            // - El PRIMER nodo no tiene anterior: su liga izquierda es null.
+                            // - El ULTIMO nodo no tiene siguiente: su liga derecha es null.
+                            // - Si solo hay un nodo: ambas ligas son null.
+                            if (esPrimero && esUltimo) {
+                                etiquetaNodo = "[ null | " + d + " | null ]";
+                                tooltipNodo = "Nodo unico: Dato = " + d + " (Liga Izq = null, Liga Der = null)";
+                            } else if (esPrimero) {
+                                etiquetaNodo = "[ null | " + d + " | • ]";
+                                tooltipNodo = "Primer nodo: Dato = " + d + " (Liga Izq = null, Liga Der = siguiente)";
+                            } else if (esUltimo) {
+                                etiquetaNodo = "[ • | " + d + " | null ]";
+                                tooltipNodo = "Ultimo nodo: Dato = " + d + " (Liga Izq = anterior, Liga Der = null)";
+                            } else {
+                                etiquetaNodo = "[ • | " + d + " | • ]";
+                                tooltipNodo = "Nodo intermedio: Dato = " + d + " (Liga Izq = anterior, Liga Der = siguiente)";
+                            }
+                        }
+                    } else {
+                        // LISTA LIGADA SIMPLE:
+                        // Posee un campo de informacion (dato) y un campo de liga al sucesor.
+                        if (esCircular) {
+                            // En la circular simple: todos los nodos tienen liga activa '•'.
+                            etiquetaNodo = "[ " + d + " | • ]";
+                            tooltipNodo = "Nodo: Dato = " + d + " (Liga al siguiente nodo)";
+                        } else {
+                            // En la lista ligada simple (lineal):
+                            // El ULTIMO elemento no apunta a nada: su liga es null.
+                            if (esUltimo) {
+                                etiquetaNodo = "[ " + d + " | null ]";
+                                tooltipNodo = "Ultimo nodo: Dato = " + d + " (Liga = null, fin de la lista)";
+                            } else {
+                                etiquetaNodo = "[ " + d + " | • ]";
+                                tooltipNodo = "Nodo: Dato = " + d + " (Liga al siguiente nodo)";
+                            }
+                        }
+                    }
+
+                    JLabel bloque = crearBloqueLabel(etiquetaNodo, fondo, borde, texto);
+                    bloque.setToolTipText(tooltipNodo);
                     panelBloques.add(bloque);
 
                     if (!esUltimo) {
@@ -121,11 +182,19 @@ public class PanelTipoLista extends javax.swing.JPanel {
                 i++;
             }
 
+            // Para listas circulares se muestra el texto explicativo de retorno.
+            // Para listas lineales simples, como el ultimo nodo ya contiene 'null' en su campo de liga,
+            // no se agrega " -> null" redundante afuera del recuadro.
             if (panelBloques != null && cierre != null && !cierre.isEmpty()) {
-                JLabel lblCierre = new JLabel(" " + cierre, SwingConstants.CENTER);
-                lblCierre.setFont(new Font("SansSerif", Font.BOLD, 14));
-                lblCierre.setForeground(new Color(66, 66, 66));
-                panelBloques.add(lblCierre);
+                boolean esCircularLista = (lista instanceof ListasDinamicas.ListaCircularSimple)
+                        || (lista instanceof ListasDinamicas.ListaCircularDoblementeLigada)
+                        || (titulo != null && titulo.toLowerCase().contains("circular"));
+                if (esCircularLista || !cierre.contains("null")) {
+                    JLabel lblCierre = new JLabel(" " + cierre, SwingConstants.CENTER);
+                    lblCierre.setFont(new Font("SansSerif", Font.BOLD, 14));
+                    lblCierre.setForeground(new Color(66, 66, 66));
+                    panelBloques.add(lblCierre);
+                }
             }
         }
 
@@ -350,56 +419,61 @@ public class PanelTipoLista extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(331, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(lblTitulo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lblDesc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(392, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(360, 360, 360)
-                        .addComponent(btnTipos, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(40, 40, 40)
-                        .addComponent(btnMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPaneBloques, javax.swing.GroupLayout.PREFERRED_SIZE, 856, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(lblValor1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtValor1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jButton2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton5)
-                                .addGap(18, 18, 18)
-                                .addComponent(jButton6))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(lblValor)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtValor, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnInsIni)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnInsFin)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnElimIni)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnElimFin)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnElimVal)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnBuscar)))
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jScrollPaneBloques, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPaneLista, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 1248, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblEstado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap(330, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(lblTitulo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lblDesc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                            .addComponent(lblValor1)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(txtValor1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(jButton2)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(jButton3)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(jButton4)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(jButton5)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(jButton6))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                            .addComponent(lblValor)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(txtValor, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(btnInsIni)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(btnInsFin)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(btnElimIni)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(btnElimFin)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(btnElimVal)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(btnBuscar)))
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(360, 360, 360)
+                                .addComponent(btnTipos, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(40, 40, 40)
+                                .addComponent(btnMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(895, 895, 895)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblEstado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jScrollPaneLista, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addContainerGap(430, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -434,15 +508,12 @@ public class PanelTipoLista extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addComponent(jScrollPaneBloques, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(20, 20, 20))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPaneLista, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPaneLista, javax.swing.GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
+                    .addComponent(jScrollPaneBloques))
+                .addGap(18, 18, 18)
+                .addComponent(lblEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(52, 52, 52)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnTipos, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
