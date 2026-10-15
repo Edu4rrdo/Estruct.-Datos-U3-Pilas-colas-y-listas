@@ -7,6 +7,7 @@ package Ventana.Paneles;
 import ListasDinamicas.ListaDinamica;
 import Ventana.Ventana;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.List;
@@ -16,12 +17,15 @@ import javax.swing.SwingConstants;
 
 /**
  * Panel para los tipos de listas dinamicas.
- * Clase hija de PanelBase con dibujo de recuadros en bloque con JLabel.
+ * Hereda directamente de javax.swing.JPanel para coincidir con su formulario visual
+ * de NetBeans (PanelTipoLista.form) y evitar conflictos de herencia en el diseñador grafico.
  *
  * @author eduardo-b
  */
-public class PanelTipoLista extends PanelBase {
+public class PanelTipoLista extends javax.swing.JPanel {
 
+    // Referencia a la ventana principal para navegacion entre pantallas
+    private Ventana ventanaPadre;
     private ListaDinamica lista;
     private String flecha;
     private String cierre;
@@ -41,7 +45,7 @@ public class PanelTipoLista extends PanelBase {
      */
     public PanelTipoLista(Ventana ventanaPadre, String titulo, ListaDinamica lista,
             String flecha, String cierre) {
-        super(ventanaPadre);
+        this.ventanaPadre = ventanaPadre;
         this.titulo = titulo;
         this.lista = lista;
         this.flecha = flecha;
@@ -62,7 +66,10 @@ public class PanelTipoLista extends PanelBase {
         actualizarVista();
     }
 
-    @Override
+    /**
+     * Refresca la vista tanto del JList como del panel de bloques visuales
+     * representando los nodos y sus ligas de conexion.
+     */
     public void actualizarVista() {
         modelo.clear();
         if (panelBloques != null) {
@@ -140,6 +147,80 @@ public class PanelTipoLista extends PanelBase {
     private void error(String msg) {
         lblEstado.setForeground(Color.RED);
         lblEstado.setText(msg);
+    }
+
+    /**
+     * Valida y extrae un numero entero desde un campo de texto JTextField.
+     * Si el campo esta vacio o no es un numero entero valido, muestra
+     * un mensaje de error didactico en la etiqueta de estado y enfoca el campo.
+     *
+     * @param txt Campo de texto de entrada
+     * @return El entero parseado o null si la entrada fue invalida
+     */
+    private Integer leerEntero(javax.swing.JTextField txt) {
+        if (txt == null) return null;
+        String texto = txt.getText().trim();
+        if (texto.isEmpty()) {
+            error("Por favor, ingrese un valor en el campo requerido.");
+            txt.requestFocusInWindow();
+            return null;
+        }
+        try {
+            int valor = Integer.parseInt(texto);
+            txt.setText("");
+            txt.requestFocusInWindow();
+            return valor;
+        } catch (NumberFormatException e) {
+            error("Valor invalido: debe ingresar un numero entero.");
+            txt.requestFocusInWindow();
+            return null;
+        }
+    }
+
+    /**
+     * Crea un JLabel personalizado con estilo de bloque o nodo de lista.
+     *
+     * @param texto Contenido visual del nodo (dato)
+     * @param fondo Color de fondo del bloque
+     * @param borde Color del borde redondeado
+     * @param textoColor Color de la tipografia
+     * @return JLabel configurado con padding y borde
+     */
+    private JLabel crearBloqueLabel(String texto, Color fondo, Color borde, Color textoColor) {
+        JLabel lbl = new JLabel(texto, SwingConstants.CENTER);
+        lbl.setFont(new Font("Monospaced", Font.BOLD, 18));
+        lbl.setOpaque(true);
+        lbl.setBackground(fondo);
+        lbl.setForeground(textoColor);
+        lbl.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(borde, 3, true),
+            javax.swing.BorderFactory.createEmptyBorder(10, 20, 10, 20)
+        ));
+        lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return lbl;
+    }
+
+    /**
+     * Crea un JLabel para representar visualmente el puntero o flecha de enlace entre nodos.
+     *
+     * @param flecha Texto de la flecha (por ejemplo " -> " o " <-> ")
+     * @return JLabel con la flecha formateada
+     */
+    private JLabel crearFlechaLabel(String flecha) {
+        JLabel lbl = new JLabel(flecha, SwingConstants.CENTER);
+        lbl.setFont(new Font("SansSerif", Font.BOLD, 18));
+        lbl.setForeground(new Color(66, 66, 66));
+        lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return lbl;
+    }
+
+    /**
+     * Regresa a la pantalla del menu principal de la aplicacion.
+     */
+    private void volverAlMenu() {
+        if (ventanaPadre != null) {
+            ventanaPadre.mostrarPanel("Menu");
+        }
     }
 
     /**
