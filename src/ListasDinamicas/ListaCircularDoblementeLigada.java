@@ -31,6 +31,92 @@ public class ListaCircularDoblementeLigada extends ListaDinamica {
         P = Q;
         U = Q;
     }
+    
+        private Nodo buscarNodo(int ref) {
+        if (P == null) {
+            return null;
+        }
+        Nodo Q = P;
+        do {
+            if (Q.info == ref) {
+                return Q;
+            }
+            Q = Q.der;
+        } while (Q != P);
+        return null;
+    }
+
+    @Override
+    public boolean insertarAntes(int ref, int valor) {
+        Nodo Q = buscarNodo(ref);
+        if (Q == null) {
+            return false;
+        }
+        Nodo N = new Nodo(valor);
+        N.izq = Q.izq;
+        N.der = Q;
+        Q.izq.der = N;
+        Q.izq = N;
+        if (Q == P) {                        // antes del primero: N pasa a ser el primero
+            P = N;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean insertarDespues(int ref, int valor) {
+        Nodo Q = buscarNodo(ref);
+        if (Q == null) {
+            return false;
+        }
+        Nodo N = new Nodo(valor);
+        N.izq = Q;
+        N.der = Q.der;
+        Q.der.izq = N;
+        Q.der = N;
+        if (Q == U) {                        // despues del ultimo: N pasa a ser el ultimo
+            U = N;
+        }
+        return true;
+    }
+
+    @Override
+    public Integer eliminarAntes(int ref) {
+        Nodo Q = buscarNodo(ref);
+        if (Q == null || P == U) {
+            return null;
+        }
+        Nodo A = Q.izq;                      // el nodo que se elimina
+        Nodo B = A.izq;                      // el que esta antes de A
+        B.der = Q;
+        Q.izq = B;
+        if (A == P) {
+            P = Q;
+        }
+        if (A == U) {
+            U = B;
+        }
+        return A.info;
+    }
+
+    @Override
+    public Integer eliminarDespues(int ref) {
+        Nodo Q = buscarNodo(ref);
+        if (Q == null || P == U) {
+            return null;
+        }
+        Nodo S = Q.der;                      // el nodo que se elimina
+        Nodo C = S.der;                      // el que esta despues de S
+        Q.der = C;
+        C.izq = Q;
+        if (S == P) {
+            P = C;
+        }
+        if (S == U) {
+            U = Q;
+        }
+        return S.info;
+    }
 
     @Override
     public void insertarInicio(int valor) {

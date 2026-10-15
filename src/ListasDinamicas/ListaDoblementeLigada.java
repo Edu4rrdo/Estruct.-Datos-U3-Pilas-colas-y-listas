@@ -25,6 +25,84 @@ public class ListaDoblementeLigada extends ListaDinamica {
         this.U = null;
     }
 
+        private Nodo buscarNodo(int ref) {
+        Nodo Q = P;
+        while (Q != null && Q.info != ref) {
+            Q = Q.der;
+        }
+        return Q;
+    }
+
+    @Override
+    public boolean insertarAntes(int ref, int valor) {
+        Nodo Q = buscarNodo(ref);
+        if (Q == null) {
+            return false;
+        }
+        if (Q == P) {
+            insertarInicio(valor);
+            return true;
+        }
+        Nodo N = new Nodo(valor);
+        N.izq = Q.izq;
+        N.der = Q;
+        Q.izq.der = N;
+        Q.izq = N;
+        return true;
+    }
+
+    @Override
+    public boolean insertarDespues(int ref, int valor) {
+        Nodo Q = buscarNodo(ref);
+        if (Q == null) {
+            return false;
+        }
+        if (Q == U) {
+            insertarFinal(valor);
+            return true;
+        }
+        Nodo N = new Nodo(valor);
+        N.izq = Q;
+        N.der = Q.der;
+        Q.der.izq = N;
+        Q.der = N;
+        return true;
+    }
+
+    @Override
+    public Integer eliminarAntes(int ref) {
+        Nodo Q = buscarNodo(ref);
+        if (Q == null || Q == P) {
+            return null;
+        }
+        Nodo A = Q.izq;                      // el nodo que se elimina
+        int valor = A.info;
+        if (A == P) {
+            eliminarInicio();
+        } else {
+            A.izq.der = Q;
+            Q.izq = A.izq;
+        }
+        return valor;
+    }
+
+    @Override
+    public Integer eliminarDespues(int ref) {
+        Nodo Q = buscarNodo(ref);
+        if (Q == null || Q == U) {
+            return null;
+        }
+        Nodo S = Q.der;                      // el nodo que se elimina
+        int valor = S.info;
+        if (S == U) {
+            eliminarFinal();
+        } else {
+            Q.der = S.der;
+            S.der.izq = Q;
+        }
+        return valor;
+    }
+    
     @Override
     public void insertarInicio(int valor) {
         Nodo Q = new Nodo(valor);

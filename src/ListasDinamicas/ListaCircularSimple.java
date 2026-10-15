@@ -23,6 +23,96 @@ public class ListaCircularSimple extends ListaDinamica {
         this.U = null;
     }
 
+        private Nodo buscarNodo(int ref) {
+        if (P == null) {
+            return null;
+        }
+        Nodo Q = P;
+        do {
+            if (Q.info == ref) {
+                return Q;
+            }
+            Q = Q.liga;
+        } while (Q != P);
+        return null;
+    }
+
+    @Override
+    public boolean insertarAntes(int ref, int valor) {
+        if (P == null) {
+            return false;
+        }
+        Nodo T = U;                          // T = anterior de Q
+        Nodo Q = P;
+        do {
+            if (Q.info == ref) {
+                Nodo N = new Nodo(valor);
+                N.liga = Q;
+                T.liga = N;
+                if (Q == P) {                // antes del primero: N pasa a ser el primero
+                    P = N;
+                }
+                return true;
+            }
+            T = Q;
+            Q = Q.liga;
+        } while (Q != P);
+        return false;
+    }
+
+    @Override
+    public boolean insertarDespues(int ref, int valor) {
+        Nodo Q = buscarNodo(ref);
+        if (Q == null) {
+            return false;
+        }
+        Nodo N = new Nodo(valor);
+        N.liga = Q.liga;
+        Q.liga = N;
+        if (Q == U) {                        // despues del ultimo: N pasa a ser el ultimo
+            U = N;
+        }
+        return true;
+    }
+
+    @Override
+    public Integer eliminarAntes(int ref) {
+        Nodo Q = buscarNodo(ref);
+        if (Q == null || P == U) {           // no existe, o solo hay un nodo
+            return null;
+        }
+        Nodo X = Q;                          // X = nodo que esta 2 antes de Q
+        while (X.liga.liga != Q) {
+            X = X.liga;
+        }
+        Nodo A = X.liga;                     // A = el nodo que se elimina
+        X.liga = Q;
+        if (A == P) {
+            P = Q;
+        }
+        if (A == U) {
+            U = X;
+        }
+        return A.info;
+    }
+
+    @Override
+    public Integer eliminarDespues(int ref) {
+        Nodo Q = buscarNodo(ref);
+        if (Q == null || P == U) {
+            return null;
+        }
+        Nodo S = Q.liga;                     // el nodo que se elimina
+        Q.liga = S.liga;
+        if (S == P) {
+            P = S.liga;
+        }
+        if (S == U) {
+            U = Q;
+        }
+        return S.info;
+    }
+    
     @Override
     public void insertarInicio(int valor) {
         Nodo Q = new Nodo(valor);

@@ -28,7 +28,15 @@ public abstract class ListaDinamica {
     public abstract Integer eliminarFinal();    // regresa null si la lista esta vacia
 
     public abstract boolean eliminarValor(int valor);   // elimina la primera coincidencia
-
+    
+    public abstract boolean insertarAntes(int ref, int valor); // false si ref no existe
+    
+    public abstract boolean insertarDespues(int ref, int valor); // false si ref no existe
+    
+    public abstract Integer eliminarAntes(int ref);     // null si ref no existe o no tiene nodo antes
+    
+    public abstract Integer eliminarDespues(int ref);
+    
     public abstract boolean buscar(int valor);
 
     public abstract boolean estaVacia();
