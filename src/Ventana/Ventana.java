@@ -1,75 +1,45 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
 package Ventana;
 
 import Ventana.Paneles.PanelCola;
 import Ventana.Paneles.PanelPila;
 import Ventana.Paneles.PanelTipoLista;
 import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
-public class Ventana extends JFrame {
+/**
+ * Ventana principal (JFrame Form) de la aplicacion.
+ * Permite la navegacion entre el menu principal, Pilas, Colas y los diferentes
+ * tipos de Listas Dinamicas.
+ * Editable visualmente desde la pestaña de Diseño (Design) en Apache NetBeans.
+ *
+ * @author eduardo-b
+ */
+public class Ventana extends javax.swing.JFrame {
 
     private CardLayout cardLayout;
-    private JPanel panelContenedor;
 
+    /**
+     * Constructor principal de Ventana.
+     */
     public Ventana() {
-
-        this.setTitle("Pilas, Colas y Listas Dinamicas");
-        this.setSize(1920, 1080);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        initComponents();
+        cardLayout = (CardLayout) panelContenedor.getLayout();
+        inicializarPaneles();
         this.setLocationRelativeTo(null);
+        this.setVisible(true);
+    }
 
-        cardLayout = new CardLayout();
-        panelContenedor = new JPanel(cardLayout);
-
-        // se crea un panel para los botones en forma vertical
-        JPanel ventanaPrincipal = new JPanel();
-        ventanaPrincipal.setLayout(new BoxLayout(ventanaPrincipal, BoxLayout.Y_AXIS));
-
-        // creamos los botones
-        JButton btnCola = new JButton("Cola Dinamica");
-        JButton btnPila = new JButton("Pila Dinamica");
-        JButton btnLista = new JButton("Lista Dinamica");
-
-        // centramos los botones en el panel
-        btnCola.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnPila.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnLista.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // lo que van a hacer cuando se presionen los botones
-        btnCola.addActionListener(e -> cardLayout.show(panelContenedor, "Cola"));
-        btnPila.addActionListener(e -> cardLayout.show(panelContenedor, "Pila"));
-        btnLista.addActionListener(e -> cardLayout.show(panelContenedor, "Lista"));
-
-        // ponemos todos los botones de el mismo tamaño
-        Dimension tamanoBtn = new Dimension(800, 20000);
-        btnCola.setMaximumSize(tamanoBtn);
-        btnPila.setMaximumSize(tamanoBtn);
-        btnLista.setMaximumSize(tamanoBtn);
-
-        // añadimos el panel con el espaciado
-
-        ventanaPrincipal.add(Box.createVerticalGlue()); // empuja del centro hacia arriba
-        ventanaPrincipal.add(btnCola);
-        ventanaPrincipal.add(Box.createRigidArea(new Dimension(0, 200))); // espaciado
-        ventanaPrincipal.add(btnPila);
-        ventanaPrincipal.add(Box.createRigidArea(new Dimension(0, 200))); // espaciado
-        ventanaPrincipal.add(btnLista);
-        ventanaPrincipal.add(Box.createVerticalGlue()); // empuja del centro hacia abajo
-
-        // agregado de paneles a el panel contenedor
-        panelContenedor.add(ventanaPrincipal, "Menu");
+    /**
+     * Registra todos los paneles de estructuras en el CardLayout de panelContenedor.
+     */
+    private void inicializarPaneles() {
         panelContenedor.add(new PanelPila(this), "Pila");
         panelContenedor.add(new PanelCola(this), "Cola");
         panelContenedor.add(new PanelLista(this), "Lista");
-        
-        
+
         // un panel por cada tipo de lista
         panelContenedor.add(new PanelTipoLista(this, "Lista Ligada Simple",
                 new ListasDinamicas.ListaLigadaSimple(), " -> ", " -> null"), "ListaSimple");
@@ -79,15 +49,139 @@ public class Ventana extends JFrame {
                 new ListasDinamicas.ListaCircularSimple(), " -> ", "  (el ultimo regresa al primero)"), "ListaCircularSimple");
         panelContenedor.add(new PanelTipoLista(this, "Lista Circular Doblemente Ligada",
                 new ListasDinamicas.ListaCircularDoblementeLigada(), " <-> ", "  (el ultimo se une con el primero)"), "ListaCircularDoble");
-
-        this.add(panelContenedor);
-
-        this.setVisible(true);
-
     }
 
+    /**
+     * Muestra el panel con el nombre indicado en el CardLayout.
+     *
+     * @param nombrePanel Nombre de la tarjeta a mostrar ("Menu", "Pila", "Cola", "Lista", etc.)
+     */
     public void mostrarPanel(String nombrePanel) {
-        cardLayout.show(panelContenedor, nombrePanel);
+        if (cardLayout != null && panelContenedor != null) {
+            cardLayout.show(panelContenedor, nombrePanel);
+        }
     }
 
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        panelContenedor = new javax.swing.JPanel();
+        panelMenu = new javax.swing.JPanel();
+        lblTitulo = new javax.swing.JLabel();
+        lblSubtitulo = new javax.swing.JLabel();
+        btnCola = new javax.swing.JButton();
+        btnPila = new javax.swing.JButton();
+        btnLista = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Pilas, Colas y Listas Dinamicas");
+        setPreferredSize(new java.awt.Dimension(1920, 1080));
+
+        panelContenedor.setLayout(new java.awt.CardLayout());
+
+        lblTitulo.setFont(new java.awt.Font("Monospaced", 1, 42)); // NOI18N
+        lblTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTitulo.setText("Estructuras de Datos Dinamicas");
+
+        lblSubtitulo.setFont(new java.awt.Font("SansSerif", 0, 24)); // NOI18N
+        lblSubtitulo.setForeground(new java.awt.Color(100, 100, 100));
+        lblSubtitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblSubtitulo.setText("Pilas, Colas y Listas");
+
+        btnCola.setFont(new java.awt.Font("SansSerif", 1, 26)); // NOI18N
+        btnCola.setText("Cola Dinamica");
+        btnCola.addActionListener(this::btnColaActionPerformed);
+
+        btnPila.setFont(new java.awt.Font("SansSerif", 1, 26)); // NOI18N
+        btnPila.setText("Pila Dinamica");
+        btnPila.addActionListener(this::btnPilaActionPerformed);
+
+        btnLista.setFont(new java.awt.Font("SansSerif", 1, 26)); // NOI18N
+        btnLista.setText("Lista Dinamica");
+        btnLista.addActionListener(this::btnListaActionPerformed);
+
+        javax.swing.GroupLayout panelMenuLayout = new javax.swing.GroupLayout(panelMenu);
+        panelMenu.setLayout(panelMenuLayout);
+        panelMenuLayout.setHorizontalGroup(
+            panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelMenuLayout.createSequentialGroup()
+                .addContainerGap(635, Short.MAX_VALUE)
+                .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(lblTitulo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblSubtitulo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnCola, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
+                    .addComponent(btnPila, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
+                    .addComponent(btnLista, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE))
+                .addContainerGap(635, Short.MAX_VALUE))
+        );
+        panelMenuLayout.setVerticalGroup(
+            panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelMenuLayout.createSequentialGroup()
+                .addGap(160, 160, 160)
+                .addComponent(lblTitulo)
+                .addGap(15, 15, 15)
+                .addComponent(lblSubtitulo)
+                .addGap(50, 50, 50)
+                .addComponent(btnCola, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
+                .addComponent(btnPila, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
+                .addComponent(btnLista, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(200, Short.MAX_VALUE))
+        );
+
+        panelContenedor.add(panelMenu, "Menu");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panelContenedor, javax.swing.GroupLayout.DEFAULT_SIZE, 1920, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panelContenedor, javax.swing.GroupLayout.DEFAULT_SIZE, 1080, Short.MAX_VALUE)
+        );
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnColaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnColaActionPerformed
+        mostrarPanel("Cola");
+    }//GEN-LAST:event_btnColaActionPerformed
+
+    private void btnPilaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPilaActionPerformed
+        mostrarPanel("Pila");
+    }//GEN-LAST:event_btnPilaActionPerformed
+
+    private void btnListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListaActionPerformed
+        mostrarPanel("Lista");
+    }//GEN-LAST:event_btnListaActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> {
+            new Ventana().setVisible(true);
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCola;
+    private javax.swing.JButton btnLista;
+    private javax.swing.JButton btnPila;
+    private javax.swing.JLabel lblSubtitulo;
+    private javax.swing.JLabel lblTitulo;
+    private javax.swing.JPanel panelContenedor;
+    private javax.swing.JPanel panelMenu;
+    // End of variables declaration//GEN-END:variables
 }
