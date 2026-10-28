@@ -4,40 +4,33 @@
  */
 package Ventana.Paneles;
 
-import PilasYColas.Cola;
 import PilasYColas.EstructuraLineal;
 import PilasYColas.Pila;
+import Ventana.Paneles.Dibujo.PanelDibujoBase;
 import Ventana.Ventana;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.util.List;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
 /**
  * ============================================================================
  * CLASE: PanelBase (Formulario visual base para Pilas y Colas)
  * ============================================================================
  * Esta clase unifica la interfaz grafica de usuario para Pila y Cola dinamica.
+ * Contiene los controles de entrada (botones de insertar, eliminar, caja de texto).
  *
- * NOTA DIDACTICA SOBRE APACHE NETBEANS:
+ * ARQUITECTURA MODULAR DE DIBUJO:
  * ----------------------------------------------------------------------------
- * 1. ¿Por que algunas partes del codigo estan bloqueadas (fondo gris)?
- *    NetBeans protege el metodo initComponents() y la declaracion de variables
- *    mediante "Guarded Blocks" (// <editor-fold defaultstate="collapsed" desc="Generated Code">).
- *    Esto lo hace NetBeans automaticamente para evitar que se desincronice el codigo
- *    con el archivo visual PanelBase.form.
- * 2. ¿Como y donde se puede cambiar la forma en que se dibujan las Pilas y Colas?
- *    ¡Toda la representacion visual de los nodos NO esta bloqueada! Se encuentra
- *    en el metodo `actualizarVista()`. Puedes modificar libremente colores, fuentes,
- *    tamaños, bordes, flechas o la orientacion de los nodos en dicho metodo.
+ * Todo el dibujo y renderizado de los nodos ya NO se realiza dentro de esta clase,
+ * sino en la clase especializada:
+ * {@link PanelDibujoBase}
+ *
+ * De este modo, si deseas cambiar la apariencia visual de los nodos (colores,
+ * orientacion, bordes, flechas o indicadores), solo debes modificar la clase
+ * PanelDibujoBase sin alterar este formulario de NetBeans.
  * ============================================================================
  *
  * @author eduardo-b
@@ -53,6 +46,11 @@ public class PanelBase extends javax.swing.JPanel {
      * Referencia polimorfica a la estructura de datos activa (Pila o Cola).
      */
     protected EstructuraLineal estructura;
+
+    /**
+     * Componente JPanel dedicado exclusivamente al dibujo grafico de los nodos.
+     */
+    protected PanelDibujoBase panelDibujoBase;
 
     /**
      * Constructor por defecto para que Apache NetBeans pueda cargar
@@ -82,6 +80,11 @@ public class PanelBase extends javax.swing.JPanel {
         this.ventanaPadre = ventanaPadre;
         this.estructura = estructura;
         initComponents();
+
+        // Inicializar el panel de dibujo especializado y asignarlo al JScrollPane
+        this.panelDibujoBase = new PanelDibujoBase();
+        jScrollPane1.setViewportView(this.panelDibujoBase);
+
         this.setPreferredSize(new Dimension(1920, 1080));
         this.setSize(1920, 1080);
         configurarSegunEstructura();
@@ -124,148 +127,15 @@ public class PanelBase extends javax.swing.JPanel {
 
     /**
      * =========================================================================
-     * METODO DE DIBUJADO VISUAL: actualizarVista()
+     * METODO: actualizarVista()
      * =========================================================================
-     * Este metodo dibuja los nodos de la estructura lineal (Pila o Cola).
-     *
-     * ¿COMO CAMBIAR EL DIBUJO DE LAS PILAS O COLAS?
-     * Aqui es donde puedes modificar la apariencia visual:
-     * 1. Colores de fondo y borde: Ajusta las variables 'colorFondo', 'colorBorde'
-     *    y 'colorTexto' para cambiar la paleta de colores.
-     * 2. Formato de nodo: Modifica la variable 'etiquetaTextoNodo' para mostrar
-     *    el nodo de forma diferente (ej. "[ Dato: %d | Liga ]").
-     * 3. Flechas de conexion: Modifica 'crearFlechaLabel(" → ")' para usar
-     *    otra flecha como " ➔ ", " ⇒ ", o cambiar su tamaño.
-     * 4. Apuntadores externos: Modifica los textos '▼ TOPE', '▼ BASE', '▼ FRENTE', '▼ FINAL'.
+     * Delega la responsabilidad de dibujo al panel especializado PanelDibujoBase.
      * =========================================================================
      */
     public void actualizarVista() {
-        if (panelBloques == null) return;
-        panelBloques.removeAll();
-
-        // Si la estructura no contiene datos, mostrar mensaje descriptivo
-        if (this.estructura == null || this.estructura.estaVacia()) {
-            JLabel etiquetaMensajeVacio = new JLabel(
-                "(La estructura esta vacia - Inserte elementos para visualizar los bloques)",
-                SwingConstants.CENTER
-            );
-            etiquetaMensajeVacio.setFont(new Font("SansSerif", Font.ITALIC, 18));
-            etiquetaMensajeVacio.setForeground(new Color(130, 130, 130));
-            panelBloques.add(etiquetaMensajeVacio);
-        } else {
-            boolean esEstructuraCola = (this.estructura instanceof Cola);
-            List<Integer> listaElementos = this.estructura.aLista();
-
-            for (int indiceElemento = 0; indiceElemento < listaElementos.size(); indiceElemento++) {
-                int valorDatoNodo = listaElementos.get(indiceElemento);
-                boolean esPrimerElemento = (indiceElemento == 0);
-                boolean esUltimoElemento = (indiceElemento == listaElementos.size() - 1);
-
-                // --- 1. APUNTADORES EXTERNOS (UBICADOS AFUERA DE LOS RECUADROS) ---
-                String textoIndicadorExterno = " ";
-                Color colorIndicadorExterno = new Color(66, 66, 66);
-
-                if (esEstructuraCola) {
-                    // En Cola: Frente es el proximo elemento en salir, Final es el mas reciente
-                    if (esPrimerElemento && esUltimoElemento) {
-                        textoIndicadorExterno = "▼ FRENTE / FINAL";
-                        colorIndicadorExterno = new Color(46, 125, 50); // Verde oscuro
-                    } else if (esPrimerElemento) {
-                        textoIndicadorExterno = "▼ FRENTE";
-                        colorIndicadorExterno = new Color(46, 125, 50); // Verde oscuro
-                    } else if (esUltimoElemento) {
-                        textoIndicadorExterno = "▼ FINAL";
-                        colorIndicadorExterno = new Color(230, 81, 0);  // Naranja
-                    }
-                } else {
-                    // En Pila: Tope es la cima (LIFO), Base es el fondo
-                    if (esPrimerElemento && esUltimoElemento) {
-                        textoIndicadorExterno = "▼ TOPE / BASE";
-                        colorIndicadorExterno = new Color(13, 71, 161); // Azul oscuro
-                    } else if (esPrimerElemento) {
-                        textoIndicadorExterno = "▼ TOPE";
-                        colorIndicadorExterno = new Color(13, 71, 161); // Azul oscuro
-                    } else if (esUltimoElemento) {
-                        textoIndicadorExterno = "▼ BASE";
-                        colorIndicadorExterno = new Color(97, 97, 97);   // Gris neutro
-                    }
-                }
-
-                // Etiqueta para el texto del apuntador externo
-                JLabel etiquetaIndicador = new JLabel(textoIndicadorExterno, SwingConstants.CENTER);
-                etiquetaIndicador.setFont(new Font("SansSerif", Font.BOLD, 14));
-                etiquetaIndicador.setForeground(colorIndicadorExterno);
-                etiquetaIndicador.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-                // --- 2. RECUADRO DIDACTICO DEL NODO [ Dato | Liga ] ---
-                String etiquetaTextoNodo;
-                if (esUltimoElemento) {
-                    etiquetaTextoNodo = "[ " + valorDatoNodo + " | null ]";
-                } else {
-                    etiquetaTextoNodo = "[ " + valorDatoNodo + " | • ]";
-                }
-
-                // Paleta de colores para destacar los nodos
-                Color colorFondo;
-                Color colorBorde;
-                Color colorTexto;
-
-                if (esEstructuraCola) {
-                    colorFondo = esPrimerElemento ? new Color(200, 230, 201)
-                            : (esUltimoElemento ? new Color(255, 236, 179) : new Color(232, 245, 233));
-                    colorBorde = esPrimerElemento ? new Color(56, 142, 60)
-                            : (esUltimoElemento ? new Color(245, 127, 23) : new Color(129, 199, 132));
-                    colorTexto = esPrimerElemento ? new Color(27, 94, 32)
-                            : (esUltimoElemento ? new Color(191, 54, 12) : new Color(33, 33, 33));
-                } else {
-                    colorFondo = esPrimerElemento ? new Color(187, 222, 251) : new Color(227, 242, 253);
-                    colorBorde = esPrimerElemento ? new Color(25, 118, 210) : new Color(100, 181, 246);
-                    colorTexto = new Color(13, 71, 161);
-                }
-
-                JLabel bloqueNodoVisual = crearBloqueLabel(etiquetaTextoNodo, colorFondo, colorBorde, colorTexto);
-                Dimension dimensionPreferida = bloqueNodoVisual.getPreferredSize();
-                bloqueNodoVisual.setPreferredSize(new Dimension(Math.max(140, dimensionPreferida.width + 16), 48));
-                bloqueNodoVisual.setAlignmentX(Component.CENTER_ALIGNMENT);
-                bloqueNodoVisual.setToolTipText("Nodo: Valor = " + valorDatoNodo + (esUltimoElemento ? ", Liga = null" : ", Liga = siguiente nodo"));
-
-                // Contenedor vertical:
-                // Arriba: Indicador exterior (Tope / Base / Frente / Final)
-                // Abajo: Recuadro del nodo
-                javax.swing.JPanel contenedorVerticalNodo = new javax.swing.JPanel();
-                contenedorVerticalNodo.setLayout(new javax.swing.BoxLayout(contenedorVerticalNodo, javax.swing.BoxLayout.Y_AXIS));
-                contenedorVerticalNodo.setOpaque(false);
-                contenedorVerticalNodo.add(etiquetaIndicador);
-                contenedorVerticalNodo.add(Box.createVerticalStrut(6));
-                contenedorVerticalNodo.add(bloqueNodoVisual);
-
-                panelBloques.add(contenedorVerticalNodo);
-
-                // --- 3. FLECHA DE CONEXION ENTRE NODOS CONSECUTIVOS ---
-                if (!esUltimoElemento) {
-                    javax.swing.JPanel contenedorFlecha = new javax.swing.JPanel();
-                    contenedorFlecha.setLayout(new javax.swing.BoxLayout(contenedorFlecha, javax.swing.BoxLayout.Y_AXIS));
-                    contenedorFlecha.setOpaque(false);
-
-                    // Espaciador superior alineado con la altura del indicador
-                    JLabel espaciadorAlineacion = new JLabel(" ");
-                    espaciadorAlineacion.setFont(new Font("SansSerif", Font.BOLD, 14));
-                    espaciadorAlineacion.setAlignmentX(Component.CENTER_ALIGNMENT);
-                    contenedorFlecha.add(espaciadorAlineacion);
-                    contenedorFlecha.add(Box.createVerticalStrut(6));
-
-                    JLabel etiquetaFlecha = crearFlechaLabel(" → ");
-                    etiquetaFlecha.setPreferredSize(new Dimension(40, 48));
-                    etiquetaFlecha.setAlignmentX(Component.CENTER_ALIGNMENT);
-                    contenedorFlecha.add(etiquetaFlecha);
-
-                    panelBloques.add(contenedorFlecha);
-                }
-            }
+        if (this.panelDibujoBase != null) {
+            this.panelDibujoBase.actualizarVista(this.estructura);
         }
-
-        panelBloques.revalidate();
-        panelBloques.repaint();
     }
 
     /**
@@ -295,50 +165,23 @@ public class PanelBase extends javax.swing.JPanel {
     }
 
     /**
-     * Crea un JLabel estilizado como recuadro de nodo con fondo y borde redondeado.
-     *
-     * @param textoContenido Texto a exhibir dentro del recuadro.
-     * @param colorFondo Color de relleno del recuadro.
-     * @param colorBorde Color de la linea del borde.
-     * @param colorTexto Color de la tipografia.
-     * @return Componente JLabel configurado.
+     * Metodo delegado para construir un bloque label en el panel de dibujo.
      */
-    protected JLabel crearBloqueLabel(String textoContenido, Color colorFondo, Color colorBorde, Color colorTexto) {
-        JLabel etiquetaBloque = new JLabel(textoContenido, SwingConstants.CENTER);
-        etiquetaBloque.setFont(new Font("Monospaced", Font.BOLD, 18));
-        etiquetaBloque.setOpaque(true);
-        etiquetaBloque.setBackground(colorFondo);
-        etiquetaBloque.setForeground(colorTexto);
-        etiquetaBloque.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(colorBorde, 3, true),
-            BorderFactory.createEmptyBorder(10, 25, 10, 25)
-        ));
-        etiquetaBloque.setAlignmentX(Component.CENTER_ALIGNMENT);
-        return etiquetaBloque;
+    public JLabel crearBloqueLabel(String textoContenido, Color colorFondo, Color colorBorde, Color colorTexto) {
+        if (this.panelDibujoBase != null) {
+            return this.panelDibujoBase.crearBloqueLabel(textoContenido, colorFondo, colorBorde, colorTexto);
+        }
+        return new JLabel(textoContenido);
     }
 
     /**
-     * Sobrecarga para crear un bloque con colores predeterminados azules.
-     *
-     * @param textoContenido Texto a exhibir dentro del recuadro.
-     * @return Componente JLabel con colores azules predeterminados.
+     * Metodo delegado para construir una flecha label en el panel de dibujo.
      */
-    protected JLabel crearBloqueLabel(String textoContenido) {
-        return crearBloqueLabel(textoContenido, new Color(227, 242, 253), new Color(25, 118, 210), new Color(13, 71, 161));
-    }
-
-    /**
-     * Crea un JLabel con flecha entre bloques.
-     *
-     * @param textoFlecha Simbolo de flecha (ej. " → ").
-     * @return Componente JLabel con el simbolo centrado.
-     */
-    protected JLabel crearFlechaLabel(String textoFlecha) {
-        JLabel etiquetaFlecha = new JLabel(textoFlecha, SwingConstants.CENTER);
-        etiquetaFlecha.setFont(new Font("SansSerif", Font.BOLD, 20));
-        etiquetaFlecha.setForeground(new Color(66, 66, 66));
-        etiquetaFlecha.setAlignmentX(Component.CENTER_ALIGNMENT);
-        return etiquetaFlecha;
+    public JLabel crearFlechaLabel(String textoFlecha) {
+        if (this.panelDibujoBase != null) {
+            return this.panelDibujoBase.crearFlechaLabel(textoFlecha);
+        }
+        return new JLabel(textoFlecha);
     }
 
     /**

@@ -5,6 +5,7 @@
 package Ventana.Paneles;
 
 import ListasDinamicas.ListaDinamica;
+import Ventana.Paneles.Dibujo.PanelDibujoLista;
 import Ventana.Ventana;
 import java.awt.Color;
 import java.awt.Component;
@@ -31,6 +32,9 @@ public class PanelTipoLista extends javax.swing.JPanel {
     private String cierre;
     private String titulo;
 
+    // Componente JPanel especializado exclusivamente en el dibujo de nodos de listas
+    private PanelDibujoLista panelDibujoLista;
+
     private final DefaultListModel<String> modelo = new DefaultListModel<>();
 
     /**
@@ -52,6 +56,11 @@ public class PanelTipoLista extends javax.swing.JPanel {
         this.cierre = cierre;
 
         initComponents();
+
+        // Inicializar el panel de dibujo dedicado y colocarlo en el viewport del JScrollPane
+        this.panelDibujoLista = new PanelDibujoLista();
+        jScrollPaneBloques.setViewportView(this.panelDibujoLista);
+
         this.setPreferredSize(new Dimension(1920, 1080));
         this.setSize(1920, 1080);
         jList1.setModel(modelo);
@@ -67,140 +76,24 @@ public class PanelTipoLista extends javax.swing.JPanel {
     }
 
     /**
-     * Refresca la vista tanto del JList como del panel de bloques visuales
-     * representando los nodos y sus ligas de conexion.
+     * Refresca la lista textual (JList) y delega el dibujo grafico
+     * de los bloques al componente PanelDibujoLista.
      */
     public void actualizarVista() {
         modelo.clear();
-        if (panelBloques != null) {
-            panelBloques.removeAll();
-        }
 
-        if (lista == null)
-            return;
-        List<Integer> datos = lista.aLista();
-
-        if (datos.isEmpty()) {
-            if (panelBloques != null) {
-                JLabel lblVacia = new JLabel("(La lista esta vacia - Inserte elementos para visualizar los bloques)",
-                        SwingConstants.CENTER);
-                lblVacia.setFont(new Font("SansSerif", Font.ITALIC, 18));
-                lblVacia.setForeground(new Color(130, 130, 130));
-                panelBloques.add(lblVacia);
-            }
-        } else {
-            if (panelBloques != null) {
-                JLabel lblInicio = new JLabel("INICIO >> ", SwingConstants.CENTER);
-                lblInicio.setFont(new Font("SansSerif", Font.BOLD, 14));
-                lblInicio.setForeground(new Color(13, 71, 161));
-                panelBloques.add(lblInicio);
-            }
-
+        if (lista != null) {
+            List<Integer> datos = lista.aLista();
             int numeroElemento = 1;
             for (Integer elementoDato : datos) {
                 modelo.addElement(numeroElemento + ")  " + elementoDato);
-
-                if (panelBloques != null) {
-                    boolean esPrimero = (numeroElemento == 1);
-                    boolean esUltimo = (numeroElemento == datos.size());
-
-                    Color fondo = esPrimero ? new Color(225, 245, 254)
-                            : (esUltimo ? new Color(237, 231, 246) : new Color(245, 245, 245));
-                    Color borde = esPrimero ? new Color(2, 136, 209)
-                            : (esUltimo ? new Color(123, 31, 162) : new Color(158, 158, 158));
-                    Color texto = new Color(33, 33, 33);
-
-                    // Didactico - Estructura de Datos (Representacion de Nodos en Memoria):
-                    // 1. Identificar si la lista es circular o lineal (con extremos nulos).
-                    boolean esCircular = (lista instanceof ListasDinamicas.ListaCircularSimple)
-                            || (lista instanceof ListasDinamicas.ListaCircularDoblementeLigada)
-                            || (titulo != null && titulo.toLowerCase().contains("circular"));
-
-                    // 2. Identificar si la lista es doblemente ligada o ligada simple.
-                    boolean esDoble = (lista instanceof ListasDinamicas.ListaDoblementeLigada)
-                            || (lista instanceof ListasDinamicas.ListaCircularDoblementeLigada)
-                            || (titulo != null && titulo.toLowerCase().contains("doble"));
-
-                    String etiquetaNodo;
-                    String tooltipNodo;
-
-                    if (esDoble) {
-                        // LISTA DOBLEMENTE LIGADA:
-                        // Posee dos campos de liga: izquierda (anterior) y derecha (siguiente).
-                        if (esCircular) {
-                            // En la circular doble: todos los nodos estan enlazados con sus vecinos.
-                            etiquetaNodo = "[ • | " + elementoDato + " | • ]";
-                            tooltipNodo = "Nodo: Dato = " + elementoDato + " (Ligas Izq y Der enlazadas)";
-                        } else {
-                            // En la lista doblemente ligada simple (lineal):
-                            // - El PRIMER nodo no tiene anterior: su liga izquierda es null.
-                            // - El ULTIMO nodo no tiene siguiente: su liga derecha es null.
-                            // - Si solo hay un nodo: ambas ligas son null.
-                            if (esPrimero && esUltimo) {
-                                etiquetaNodo = "[ null | " + elementoDato + " | null ]";
-                                tooltipNodo = "Nodo unico: Dato = " + elementoDato + " (Liga Izq = null, Liga Der = null)";
-                            } else if (esPrimero) {
-                                etiquetaNodo = "[ null | " + elementoDato + " | • ]";
-                                tooltipNodo = "Primer nodo: Dato = " + elementoDato + " (Liga Izq = null, Liga Der = siguiente)";
-                            } else if (esUltimo) {
-                                etiquetaNodo = "[ • | " + elementoDato + " | null ]";
-                                tooltipNodo = "Ultimo nodo: Dato = " + elementoDato + " (Liga Izq = anterior, Liga Der = null)";
-                            } else {
-                                etiquetaNodo = "[ • | " + elementoDato + " | • ]";
-                                tooltipNodo = "Nodo intermedio: Dato = " + elementoDato + " (Liga Izq = anterior, Liga Der = siguiente)";
-                            }
-                        }
-                    } else {
-                        // LISTA LIGADA SIMPLE:
-                        // Posee un campo de informacion (dato) y un campo de liga al sucesor.
-                        if (esCircular) {
-                            // En la circular simple: todos los nodos tienen liga activa '•'.
-                            etiquetaNodo = "[ " + elementoDato + " | • ]";
-                            tooltipNodo = "Nodo: Dato = " + elementoDato + " (Liga al siguiente nodo)";
-                        } else {
-                            // En la lista ligada simple (lineal):
-                            // El ULTIMO elemento no apunta a nada: su liga es null.
-                            if (esUltimo) {
-                                etiquetaNodo = "[ " + elementoDato + " | null ]";
-                                tooltipNodo = "Ultimo nodo: Dato = " + elementoDato + " (Liga = null, fin de la lista)";
-                            } else {
-                                etiquetaNodo = "[ " + elementoDato + " | • ]";
-                                tooltipNodo = "Nodo: Dato = " + elementoDato + " (Liga al siguiente nodo)";
-                            }
-                        }
-                    }
-
-                    JLabel bloque = crearBloqueLabel(etiquetaNodo, fondo, borde, texto);
-                    bloque.setToolTipText(tooltipNodo);
-                    panelBloques.add(bloque);
-
-                    if (!esUltimo) {
-                        JLabel flechaLbl = crearFlechaLabel(flecha != null ? flecha : " -> ");
-                        panelBloques.add(flechaLbl);
-                    }
-                }
                 numeroElemento++;
-            }
-
-            // Para listas circulares se muestra el texto explicativo de retorno.
-            // Para listas lineales simples, como el ultimo nodo ya contiene 'null' en su campo de liga,
-            // no se agrega " -> null" redundante afuera del recuadro.
-            if (panelBloques != null && cierre != null && !cierre.isEmpty()) {
-                boolean esCircularLista = (lista instanceof ListasDinamicas.ListaCircularSimple)
-                        || (lista instanceof ListasDinamicas.ListaCircularDoblementeLigada)
-                        || (titulo != null && titulo.toLowerCase().contains("circular"));
-                if (esCircularLista || !cierre.contains("null")) {
-                    JLabel lblCierre = new JLabel(" " + cierre, SwingConstants.CENTER);
-                    lblCierre.setFont(new Font("SansSerif", Font.BOLD, 14));
-                    lblCierre.setForeground(new Color(66, 66, 66));
-                    panelBloques.add(lblCierre);
-                }
             }
         }
 
-        if (panelBloques != null) {
-            panelBloques.revalidate();
-            panelBloques.repaint();
+        // Delegar todo el dibujo grafico de los nodos a la clase especializada
+        if (this.panelDibujoLista != null) {
+            this.panelDibujoLista.actualizarVista(this.lista, this.titulo, this.flecha, this.cierre);
         }
     }
 
@@ -247,40 +140,23 @@ public class PanelTipoLista extends javax.swing.JPanel {
     }
 
     /**
-     * Crea un JLabel personalizado con estilo de bloque o nodo de lista.
-     *
-     * @param texto Contenido visual del nodo (dato)
-     * @param fondo Color de fondo del bloque
-     * @param borde Color del borde redondeado
-     * @param textoColor Color de la tipografia
-     * @return JLabel configurado con padding y borde
+     * Metodo delegado para construir un bloque label en el panel de dibujo.
      */
-    private JLabel crearBloqueLabel(String texto, Color fondo, Color borde, Color textoColor) {
-        JLabel lbl = new JLabel(texto, SwingConstants.CENTER);
-        lbl.setFont(new Font("Monospaced", Font.BOLD, 18));
-        lbl.setOpaque(true);
-        lbl.setBackground(fondo);
-        lbl.setForeground(textoColor);
-        lbl.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(borde, 3, true),
-            javax.swing.BorderFactory.createEmptyBorder(10, 20, 10, 20)
-        ));
-        lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-        return lbl;
+    public JLabel crearBloqueLabel(String textoContenido, Color colorFondo, Color colorBorde, Color colorTexto) {
+        if (this.panelDibujoLista != null) {
+            return this.panelDibujoLista.crearBloqueLabel(textoContenido, colorFondo, colorBorde, colorTexto);
+        }
+        return new JLabel(textoContenido);
     }
 
     /**
-     * Crea un JLabel para representar visualmente el puntero o flecha de enlace entre nodos.
-     *
-     * @param flecha Texto de la flecha (por ejemplo " -> " o " <-> ")
-     * @return JLabel con la flecha formateada
+     * Metodo delegado para construir una flecha label en el panel de dibujo.
      */
-    private JLabel crearFlechaLabel(String flecha) {
-        JLabel lbl = new JLabel(flecha, SwingConstants.CENTER);
-        lbl.setFont(new Font("SansSerif", Font.BOLD, 18));
-        lbl.setForeground(new Color(66, 66, 66));
-        lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-        return lbl;
+    public JLabel crearFlechaLabel(String textoFlecha) {
+        if (this.panelDibujoLista != null) {
+            return this.panelDibujoLista.crearFlechaLabel(textoFlecha);
+        }
+        return new JLabel(textoFlecha);
     }
 
     /**
