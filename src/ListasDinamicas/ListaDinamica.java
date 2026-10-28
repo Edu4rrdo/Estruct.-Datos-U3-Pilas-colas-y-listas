@@ -3,45 +3,123 @@ package ListasDinamicas;
 import java.util.List;
 
 /**
- * Clase Padre Abstracta para todas las Listas Dinamicas.
+ * ============================================================================
+ * CLASE ABSTRACTA: ListaDinamica
+ * ============================================================================
+ * Clase base y modelo comun para los distintos tipos de Listas Dinamicas
+ * Enlazadas implementadas en este proyecto:
  *
- * Sirve como base comun para:
- * 1. Lista Ligada Simple
- * 2. Lista Doblemente Ligada
- * 3. Lista Circular Simple
- * 4. Lista Circular Doblemente Ligada
+ * 1. Lista Ligada Simple (unidireccional con fin en null).
+ * 2. Lista Doblemente Ligada (bidireccional con extremos en null).
+ * 3. Lista Circular Simple (unidireccional cerrada en bucle).
+ * 4. Lista Circular Doblemente Ligada (bidireccional cerrada en bucle).
  *
- * Permite que la interfaz grafica (PanelTipoLista) trabaje con cualquier
- * tipo de lista mediante polimorfismo.
+ * Facilita el polimorfismo en la interfaz grafica (PanelTipoLista) permitiendo
+ * interactuar con cualquier estructura de lista usando una interfaz homogenea.
  *
  * @author eduardo-b
+ * ============================================================================
  */
 public abstract class ListaDinamica {
 
-    // Metodos abstractos que cada lista enlazada implementa segun sus ligas
-    public abstract void insertarInicio(int valor);
+    /**
+     * Inserta un nuevo elemento al principio de la lista.
+     *
+     * @param valorAInsertar Numero entero a colocar al inicio.
+     */
+    public abstract void insertarInicio(int valorAInsertar);
 
-    public abstract void insertarFinal(int valor);
+    /**
+     * Inserta un nuevo elemento al final de la lista.
+     *
+     * @param valorAInsertar Numero entero a colocar al final.
+     */
+    public abstract void insertarFinal(int valorAInsertar);
 
-    public abstract Integer eliminarInicio();   // regresa null si la lista esta vacia
+    /**
+     * Elimina y retorna el elemento ubicado al principio de la lista.
+     *
+     * @return El valor entero eliminado, o null si la lista esta vacia.
+     */
+    public abstract Integer eliminarInicio();
 
-    public abstract Integer eliminarFinal();    // regresa null si la lista esta vacia
+    /**
+     * Elimina y retorna el elemento ubicado al final de la lista.
+     *
+     * @return El valor entero eliminado, o null si la lista esta vacia.
+     */
+    public abstract Integer eliminarFinal();
 
-    public abstract boolean eliminarValor(int valor);   // elimina la primera coincidencia
-    
-    public abstract boolean insertarAntes(int ref, int valor); // false si ref no existe
-    
-    public abstract boolean insertarDespues(int ref, int valor); // false si ref no existe
-    
-    public abstract Integer eliminarAntes(int ref);     // null si ref no existe o no tiene nodo antes
-    
-    public abstract Integer eliminarDespues(int ref);
-    
-    public abstract boolean buscar(int valor);
+    /**
+     * Busca y elimina la primera coincidencia del valor solicitado.
+     *
+     * @param valorAEliminar Numero entero a remover.
+     * @return true si se encontro y elimino con exito, false si no existe o la lista esta vacia.
+     */
+    public abstract boolean eliminarValor(int valorAEliminar);
 
+    /**
+     * Inserta un nuevo elemento antes de un nodo de referencia especifico.
+     *
+     * @param valorReferencia Valor del nodo existente que sirve como punto de guia.
+     * @param valorAInsertar  Nuevo numero entero a posicionar antes de la referencia.
+     * @return true si la operacion fue exitosa, false si el valor de referencia no existe.
+     */
+    public abstract boolean insertarAntes(int valorReferencia, int valorAInsertar);
+
+    /**
+     * Inserta un nuevo elemento despues de un nodo de referencia especifico.
+     *
+     * @param valorReferencia Valor del nodo existente que sirve como punto de guia.
+     * @param valorAInsertar  Nuevo numero entero a posicionar despues de la referencia.
+     * @return true si la operacion fue exitosa, false si el valor de referencia no existe.
+     */
+    public abstract boolean insertarDespues(int valorReferencia, int valorAInsertar);
+
+    /**
+     * Elimina el nodo que se encuentra inmediatamente antes del nodo de referencia.
+     *
+     * @param valorReferencia Valor del nodo de guia.
+     * @return El entero que fue eliminado, o null si la referencia no existe o no tiene nodo previo.
+     */
+    public abstract Integer eliminarAntes(int valorReferencia);
+
+    /**
+     * Elimina el nodo que se encuentra inmediatamente despues del nodo de referencia.
+     *
+     * @param valorReferencia Valor del nodo de guia.
+     * @return El entero que fue eliminado, o null si la referencia no existe o no tiene nodo posterior.
+     */
+    public abstract Integer eliminarDespues(int valorReferencia);
+
+    /**
+     * Comprueba si un valor entero existe dentro de alguno de los nodos de la lista.
+     *
+     * @param valorABuscar Numero entero a localizar.
+     * @return true si el valor existe en la lista, false en caso contrario.
+     */
+    public abstract boolean buscar(int valorABuscar);
+
+    /**
+     * Verifica si la lista carece de nodos enlazados.
+     *
+     * @return true si la lista esta vacia, false si contiene al menos un elemento.
+     */
     public abstract boolean estaVacia();
 
-    public abstract List<Integer> aLista();     // recorre la lista y regresa sus valores en orden
+    /**
+     * Recorre secuencialmente todos los nodos y recopila sus datos en una lista de Java
+     * para facilitar su representacion en los componentes graficos.
+     *
+     * @return Coleccion de enteros con el recorrido ordenado de la lista.
+     */
+    public abstract List<Integer> aLista();
 
-    public abstract String descripcion();       // texto que explica como esta enlazada la lista
+    /**
+     * Proporciona un texto didactico que describe como estan estructurados
+     * los enlaces (ligas) en este tipo de lista.
+     *
+     * @return Descripcion explicativa de la estructura de datos.
+     */
+    public abstract String descripcion();
 }

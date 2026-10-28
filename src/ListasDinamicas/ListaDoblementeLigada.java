@@ -3,210 +3,308 @@ package ListasDinamicas;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ============================================================================
+ * CLASE: ListaDoblementeLigada
+ * ============================================================================
+ * Implementacion de una Lista Enlazada Doble (bidireccional).
+ *
+ * Caracteristicas didacticas:
+ * - Cada nodo posee dos apuntadores:
+ *     1. izq: Referencia hacia el nodo anterior.
+ *     2. der: Referencia hacia el nodo siguiente.
+ * - Permite recorrer la lista tanto hacia adelante como hacia atras.
+ * - Los extremos apuntan a null:
+ *     - El enlace izquierdo del primer nodo es null.
+ *     - El enlace derecho del ultimo nodo es null.
+ *
+ * @author eduardo-b
+ * ============================================================================
+ */
 public class ListaDoblementeLigada extends ListaDinamica {
 
+    /**
+     * Clase interna que define cada nodo de la lista doblemente ligada.
+     */
     private static class Nodo {
         int info;
-        Nodo izq; // anterior
-        Nodo der; // siguiente
+        Nodo izq; // Apuntador al nodo anterior
+        Nodo der; // Apuntador al nodo siguiente
 
-        Nodo(int info) {
-            this.info = info;
+        Nodo(int valorDato) {
+            this.info = valorDato;
             this.izq = null;
             this.der = null;
         }
     }
 
-    private Nodo P; // primer nodo
-    private Nodo U; // ultimo nodo
+    /**
+     * Apuntador al primer elemento de la lista.
+     */
+    private Nodo primerNodo;
 
+    /**
+     * Apuntador al ultimo elemento de la lista.
+     */
+    private Nodo ultimoNodo;
+
+    /**
+     * Constructor: inicializa la lista doblemente ligada vacia.
+     */
     public ListaDoblementeLigada() {
-        this.P = null;
-        this.U = null;
+        this.primerNodo = null;
+        this.ultimoNodo = null;
     }
 
-        private Nodo buscarNodo(int ref) {
-        Nodo Q = P;
-        while (Q != null && Q.info != ref) {
-            Q = Q.der;
+    /**
+     * Busca y retorna el nodo que almacena el valor solicitado.
+     *
+     * @param valorABuscar Valor entero de referencia.
+     * @return El nodo encontrado, o null si no se localiza.
+     */
+    private Nodo buscarNodo(int valorABuscar) {
+        Nodo nodoActual = this.primerNodo;
+        while (nodoActual != null && nodoActual.info != valorABuscar) {
+            nodoActual = nodoActual.der;
         }
-        return Q;
+        return nodoActual;
     }
 
+    /**
+     * Inserta un nuevo elemento antes de un nodo de referencia.
+     */
     @Override
-    public boolean insertarAntes(int ref, int valor) {
-        Nodo Q = buscarNodo(ref);
-        if (Q == null) {
+    public boolean insertarAntes(int valorReferencia, int valorAInsertar) {
+        Nodo nodoReferencia = buscarNodo(valorReferencia);
+        if (nodoReferencia == null) {
             return false;
         }
-        if (Q == P) {
-            insertarInicio(valor);
+
+        // Si la referencia es el primer elemento
+        if (nodoReferencia == this.primerNodo) {
+            insertarInicio(valorAInsertar);
             return true;
         }
-        Nodo N = new Nodo(valor);
-        N.izq = Q.izq;
-        N.der = Q;
-        Q.izq.der = N;
-        Q.izq = N;
+
+        // Crear el nuevo nodo y ajustar sus ligas dobles
+        Nodo nuevoNodo = new Nodo(valorAInsertar);
+        nuevoNodo.izq = nodoReferencia.izq;
+        nuevoNodo.der = nodoReferencia;
+        nodoReferencia.izq.der = nuevoNodo;
+        nodoReferencia.izq = nuevoNodo;
         return true;
     }
 
+    /**
+     * Inserta un nuevo elemento despues de un nodo de referencia.
+     */
     @Override
-    public boolean insertarDespues(int ref, int valor) {
-        Nodo Q = buscarNodo(ref);
-        if (Q == null) {
+    public boolean insertarDespues(int valorReferencia, int valorAInsertar) {
+        Nodo nodoReferencia = buscarNodo(valorReferencia);
+        if (nodoReferencia == null) {
             return false;
         }
-        if (Q == U) {
-            insertarFinal(valor);
+
+        // Si la referencia es el ultimo elemento
+        if (nodoReferencia == this.ultimoNodo) {
+            insertarFinal(valorAInsertar);
             return true;
         }
-        Nodo N = new Nodo(valor);
-        N.izq = Q;
-        N.der = Q.der;
-        Q.der.izq = N;
-        Q.der = N;
+
+        // Crear el nuevo nodo y ajustar sus ligas dobles
+        Nodo nuevoNodo = new Nodo(valorAInsertar);
+        nuevoNodo.izq = nodoReferencia;
+        nuevoNodo.der = nodoReferencia.der;
+        nodoReferencia.der.izq = nuevoNodo;
+        nodoReferencia.der = nuevoNodo;
         return true;
     }
 
+    /**
+     * Elimina el nodo que se encuentra antes del nodo de referencia.
+     */
     @Override
-    public Integer eliminarAntes(int ref) {
-        Nodo Q = buscarNodo(ref);
-        if (Q == null || Q == P) {
+    public Integer eliminarAntes(int valorReferencia) {
+        Nodo nodoReferencia = buscarNodo(valorReferencia);
+        // Si no existe la referencia o es el primer nodo (no tiene nada antes)
+        if (nodoReferencia == null || nodoReferencia == this.primerNodo) {
             return null;
         }
-        Nodo A = Q.izq;                      // el nodo que se elimina
-        int valor = A.info;
-        if (A == P) {
+
+        Nodo nodoAEliminar = nodoReferencia.izq;
+        int valorEliminado = nodoAEliminar.info;
+
+        if (nodoAEliminar == this.primerNodo) {
             eliminarInicio();
         } else {
-            A.izq.der = Q;
-            Q.izq = A.izq;
+            nodoAEliminar.izq.der = nodoReferencia;
+            nodoReferencia.izq = nodoAEliminar.izq;
         }
-        return valor;
+
+        return valorEliminado;
     }
 
+    /**
+     * Elimina el nodo que se encuentra despues del nodo de referencia.
+     */
     @Override
-    public Integer eliminarDespues(int ref) {
-        Nodo Q = buscarNodo(ref);
-        if (Q == null || Q == U) {
+    public Integer eliminarDespues(int valorReferencia) {
+        Nodo nodoReferencia = buscarNodo(valorReferencia);
+        // Si no existe la referencia o es el ultimo nodo (no tiene nada despues)
+        if (nodoReferencia == null || nodoReferencia == this.ultimoNodo) {
             return null;
         }
-        Nodo S = Q.der;                      // el nodo que se elimina
-        int valor = S.info;
-        if (S == U) {
+
+        Nodo nodoAEliminar = nodoReferencia.der;
+        int valorEliminado = nodoAEliminar.info;
+
+        if (nodoAEliminar == this.ultimoNodo) {
             eliminarFinal();
         } else {
-            Q.der = S.der;
-            S.der.izq = Q;
+            nodoReferencia.der = nodoAEliminar.der;
+            nodoAEliminar.der.izq = nodoReferencia;
         }
-        return valor;
-    }
-    
-    @Override
-    public void insertarInicio(int valor) {
-        Nodo Q = new Nodo(valor);
-        if (P == null) {
-            P = Q;
-            U = Q;
-            return;
-        }
-        Q.der = P;
-        P.izq = Q;
-        P = Q;
+
+        return valorEliminado;
     }
 
+    /**
+     * Inserta un nuevo elemento al inicio de la lista.
+     */
     @Override
-    public void insertarFinal(int valor) {
-        Nodo Q = new Nodo(valor);
-        if (P == null) {
-            P = Q;
-            U = Q;
+    public void insertarInicio(int valorAInsertar) {
+        Nodo nuevoNodo = new Nodo(valorAInsertar);
+        if (this.primerNodo == null) {
+            this.primerNodo = nuevoNodo;
+            this.ultimoNodo = nuevoNodo;
             return;
         }
-        Q.izq = U;
-        U.der = Q;
-        U = Q;
+
+        nuevoNodo.der = this.primerNodo;
+        this.primerNodo.izq = nuevoNodo;
+        this.primerNodo = nuevoNodo;
     }
 
+    /**
+     * Inserta un nuevo elemento al final de la lista.
+     */
+    @Override
+    public void insertarFinal(int valorAInsertar) {
+        Nodo nuevoNodo = new Nodo(valorAInsertar);
+        if (this.primerNodo == null) {
+            this.primerNodo = nuevoNodo;
+            this.ultimoNodo = nuevoNodo;
+            return;
+        }
+
+        nuevoNodo.izq = this.ultimoNodo;
+        this.ultimoNodo.der = nuevoNodo;
+        this.ultimoNodo = nuevoNodo;
+    }
+
+    /**
+     * Elimina el primer elemento de la lista.
+     */
     @Override
     public Integer eliminarInicio() {
-        if (P == null) {
+        if (this.primerNodo == null) {
             return null;
         }
-        int valor = P.info;
-        if (P == U) {
-            P = null;
-            U = null;
+
+        int valorEliminado = this.primerNodo.info;
+        if (this.primerNodo == this.ultimoNodo) {
+            this.primerNodo = null;
+            this.ultimoNodo = null;
         } else {
-            P = P.der;
-            P.izq = null;
+            this.primerNodo = this.primerNodo.der;
+            this.primerNodo.izq = null;
         }
-        return valor;
+
+        return valorEliminado;
     }
 
+    /**
+     * Elimina el ultimo elemento de la lista.
+     */
     @Override
     public Integer eliminarFinal() {
-        if (P == null) {
+        if (this.primerNodo == null) {
             return null;
         }
-        int valor = U.info;
-        if (P == U) {
-            P = null;
-            U = null;
+
+        int valorEliminado = this.ultimoNodo.info;
+        if (this.primerNodo == this.ultimoNodo) {
+            this.primerNodo = null;
+            this.ultimoNodo = null;
         } else {
-            U = U.izq;
-            U.der = null;
+            this.ultimoNodo = this.ultimoNodo.izq;
+            this.ultimoNodo.der = null;
         }
-        return valor;
+
+        return valorEliminado;
     }
 
+    /**
+     * Busca y elimina la primera coincidencia del valor solicitado.
+     */
     @Override
-    public boolean eliminarValor(int valor) {
-        Nodo Q = P;
-        while (Q != null && Q.info != valor) {
-            Q = Q.der;
+    public boolean eliminarValor(int valorAEliminar) {
+        Nodo nodoActual = this.primerNodo;
+        while (nodoActual != null && nodoActual.info != valorAEliminar) {
+            nodoActual = nodoActual.der;
         }
-        if (Q == null) {
+
+        if (nodoActual == null) {
             return false;
         }
-        if (Q == P) {
+
+        if (nodoActual == this.primerNodo) {
             eliminarInicio();
-        } else if (Q == U) {
+        } else if (nodoActual == this.ultimoNodo) {
             eliminarFinal();
         } else {
-            Q.izq.der = Q.der;
-            Q.der.izq = Q.izq;
+            nodoActual.izq.der = nodoActual.der;
+            nodoActual.der.izq = nodoActual.izq;
         }
+
         return true;
     }
 
+    /**
+     * Comprueba si un valor entero existe dentro de la lista.
+     */
     @Override
-    public boolean buscar(int valor) {
-        Nodo Q = P;
-        while (Q != null) {
-            if (Q.info == valor) {
+    public boolean buscar(int valorABuscar) {
+        Nodo nodoActual = this.primerNodo;
+        while (nodoActual != null) {
+            if (nodoActual.info == valorABuscar) {
                 return true;
             }
-            Q = Q.der;
+            nodoActual = nodoActual.der;
         }
         return false;
     }
 
+    /**
+     * Comprueba si la lista no contiene ningun nodo.
+     */
     @Override
     public boolean estaVacia() {
-        return P == null;
+        return this.primerNodo == null;
     }
 
+    /**
+     * Recopila todos los elementos desde el primero hasta el ultimo en una lista de Java.
+     */
     @Override
     public List<Integer> aLista() {
-        List<Integer> res = new ArrayList<>();
-        Nodo Q = P;
-        while (Q != null) {
-            res.add(Q.info);
-            Q = Q.der;
+        List<Integer> listaValores = new ArrayList<>();
+        Nodo nodoActual = this.primerNodo;
+        while (nodoActual != null) {
+            listaValores.add(nodoActual.info);
+            nodoActual = nodoActual.der;
         }
-        return res;
+        return listaValores;
     }
 
     @Override

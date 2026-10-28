@@ -96,13 +96,13 @@ public class PanelTipoLista extends javax.swing.JPanel {
                 panelBloques.add(lblInicio);
             }
 
-            int i = 1;
-            for (Integer d : datos) {
-                modelo.addElement(i + ")  " + d);
+            int numeroElemento = 1;
+            for (Integer elementoDato : datos) {
+                modelo.addElement(numeroElemento + ")  " + elementoDato);
 
                 if (panelBloques != null) {
-                    boolean esPrimero = (i == 1);
-                    boolean esUltimo = (i == datos.size());
+                    boolean esPrimero = (numeroElemento == 1);
+                    boolean esUltimo = (numeroElemento == datos.size());
 
                     Color fondo = esPrimero ? new Color(225, 245, 254)
                             : (esUltimo ? new Color(237, 231, 246) : new Color(245, 245, 245));
@@ -129,25 +129,25 @@ public class PanelTipoLista extends javax.swing.JPanel {
                         // Posee dos campos de liga: izquierda (anterior) y derecha (siguiente).
                         if (esCircular) {
                             // En la circular doble: todos los nodos estan enlazados con sus vecinos.
-                            etiquetaNodo = "[ • | " + d + " | • ]";
-                            tooltipNodo = "Nodo: Dato = " + d + " (Ligas Izq y Der enlazadas)";
+                            etiquetaNodo = "[ • | " + elementoDato + " | • ]";
+                            tooltipNodo = "Nodo: Dato = " + elementoDato + " (Ligas Izq y Der enlazadas)";
                         } else {
                             // En la lista doblemente ligada simple (lineal):
                             // - El PRIMER nodo no tiene anterior: su liga izquierda es null.
                             // - El ULTIMO nodo no tiene siguiente: su liga derecha es null.
                             // - Si solo hay un nodo: ambas ligas son null.
                             if (esPrimero && esUltimo) {
-                                etiquetaNodo = "[ null | " + d + " | null ]";
-                                tooltipNodo = "Nodo unico: Dato = " + d + " (Liga Izq = null, Liga Der = null)";
+                                etiquetaNodo = "[ null | " + elementoDato + " | null ]";
+                                tooltipNodo = "Nodo unico: Dato = " + elementoDato + " (Liga Izq = null, Liga Der = null)";
                             } else if (esPrimero) {
-                                etiquetaNodo = "[ null | " + d + " | • ]";
-                                tooltipNodo = "Primer nodo: Dato = " + d + " (Liga Izq = null, Liga Der = siguiente)";
+                                etiquetaNodo = "[ null | " + elementoDato + " | • ]";
+                                tooltipNodo = "Primer nodo: Dato = " + elementoDato + " (Liga Izq = null, Liga Der = siguiente)";
                             } else if (esUltimo) {
-                                etiquetaNodo = "[ • | " + d + " | null ]";
-                                tooltipNodo = "Ultimo nodo: Dato = " + d + " (Liga Izq = anterior, Liga Der = null)";
+                                etiquetaNodo = "[ • | " + elementoDato + " | null ]";
+                                tooltipNodo = "Ultimo nodo: Dato = " + elementoDato + " (Liga Izq = anterior, Liga Der = null)";
                             } else {
-                                etiquetaNodo = "[ • | " + d + " | • ]";
-                                tooltipNodo = "Nodo intermedio: Dato = " + d + " (Liga Izq = anterior, Liga Der = siguiente)";
+                                etiquetaNodo = "[ • | " + elementoDato + " | • ]";
+                                tooltipNodo = "Nodo intermedio: Dato = " + elementoDato + " (Liga Izq = anterior, Liga Der = siguiente)";
                             }
                         }
                     } else {
@@ -155,17 +155,17 @@ public class PanelTipoLista extends javax.swing.JPanel {
                         // Posee un campo de informacion (dato) y un campo de liga al sucesor.
                         if (esCircular) {
                             // En la circular simple: todos los nodos tienen liga activa '•'.
-                            etiquetaNodo = "[ " + d + " | • ]";
-                            tooltipNodo = "Nodo: Dato = " + d + " (Liga al siguiente nodo)";
+                            etiquetaNodo = "[ " + elementoDato + " | • ]";
+                            tooltipNodo = "Nodo: Dato = " + elementoDato + " (Liga al siguiente nodo)";
                         } else {
                             // En la lista ligada simple (lineal):
                             // El ULTIMO elemento no apunta a nada: su liga es null.
                             if (esUltimo) {
-                                etiquetaNodo = "[ " + d + " | null ]";
-                                tooltipNodo = "Ultimo nodo: Dato = " + d + " (Liga = null, fin de la lista)";
+                                etiquetaNodo = "[ " + elementoDato + " | null ]";
+                                tooltipNodo = "Ultimo nodo: Dato = " + elementoDato + " (Liga = null, fin de la lista)";
                             } else {
-                                etiquetaNodo = "[ " + d + " | • ]";
-                                tooltipNodo = "Nodo: Dato = " + d + " (Liga al siguiente nodo)";
+                                etiquetaNodo = "[ " + elementoDato + " | • ]";
+                                tooltipNodo = "Nodo: Dato = " + elementoDato + " (Liga al siguiente nodo)";
                             }
                         }
                     }
@@ -179,7 +179,7 @@ public class PanelTipoLista extends javax.swing.JPanel {
                         panelBloques.add(flechaLbl);
                     }
                 }
-                i++;
+                numeroElemento++;
             }
 
             // Para listas circulares se muestra el texto explicativo de retorno.
@@ -208,14 +208,14 @@ public class PanelTipoLista extends javax.swing.JPanel {
         return leerEntero(txtValor);
     }
 
-    private void exito(String msg) {
+    private void exito(String mensajeExito) {
         lblEstado.setForeground(new Color(0, 130, 0));
-        lblEstado.setText(msg);
+        lblEstado.setText(mensajeExito);
     }
 
-    private void error(String msg) {
+    private void error(String mensajeError) {
         lblEstado.setForeground(Color.RED);
-        lblEstado.setText(msg);
+        lblEstado.setText(mensajeError);
     }
 
     /**
@@ -223,25 +223,25 @@ public class PanelTipoLista extends javax.swing.JPanel {
      * Si el campo esta vacio o no es un numero entero valido, muestra
      * un mensaje de error didactico en la etiqueta de estado y enfoca el campo.
      *
-     * @param txt Campo de texto de entrada
+     * @param campoTextoEntrada Campo de texto de entrada
      * @return El entero parseado o null si la entrada fue invalida
      */
-    private Integer leerEntero(javax.swing.JTextField txt) {
-        if (txt == null) return null;
-        String texto = txt.getText().trim();
-        if (texto.isEmpty()) {
+    private Integer leerEntero(javax.swing.JTextField campoTextoEntrada) {
+        if (campoTextoEntrada == null) return null;
+        String textoCapturado = campoTextoEntrada.getText().trim();
+        if (textoCapturado.isEmpty()) {
             error("Por favor, ingrese un valor en el campo requerido.");
-            txt.requestFocusInWindow();
+            campoTextoEntrada.requestFocusInWindow();
             return null;
         }
         try {
-            int valor = Integer.parseInt(texto);
-            txt.setText("");
-            txt.requestFocusInWindow();
-            return valor;
-        } catch (NumberFormatException e) {
+            int valorConvertido = Integer.parseInt(textoCapturado);
+            campoTextoEntrada.setText("");
+            campoTextoEntrada.requestFocusInWindow();
+            return valorConvertido;
+        } catch (NumberFormatException excepcionFormato) {
             error("Valor invalido: debe ingresar un numero entero.");
-            txt.requestFocusInWindow();
+            campoTextoEntrada.requestFocusInWindow();
             return null;
         }
     }
@@ -528,95 +528,95 @@ public class PanelTipoLista extends javax.swing.JPanel {
     }//GEN-LAST:event_txtValor1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        // Evento: Insertar antes de un valor de referencia
         if (lista == null)
             return;
-        Integer ref = leerEntero(txtValor1);       // campo "Referencia"
-        if (ref == null)
+        Integer valorReferencia = leerEntero(txtValor1);       // campo "Referencia"
+        if (valorReferencia == null)
             return;
-        Integer v = leerValor();                    // campo "Valor"
-        if (v == null) {
-            txtValor1.setText(String.valueOf(ref)); // no perder la referencia escrita
+        Integer valorAInsertar = leerValor();                   // campo "Valor"
+        if (valorAInsertar == null) {
+            txtValor1.setText(String.valueOf(valorReferencia)); // no perder la referencia escrita
             return;
         }
-        if (lista.insertarAntes(ref, v)) {
+        if (lista.insertarAntes(valorReferencia, valorAInsertar)) {
             actualizarVista();
-            exito("Se inserto " + v + " antes de " + ref + ".");
+            exito("Se inserto " + valorAInsertar + " antes de " + valorReferencia + ".");
         } else {
-            error(lista.estaVacia() ? "La lista esta vacia." : "La referencia " + ref + " no esta en la lista.");
+            error(lista.estaVacia() ? "La lista esta vacia." : "La referencia " + valorReferencia + " no esta en la lista.");
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-         if (lista == null)
+        // Evento: Insertar despues de un valor de referencia
+        if (lista == null)
             return;
-        Integer ref = leerEntero(txtValor1);
-        if (ref == null)
+        Integer valorReferencia = leerEntero(txtValor1);
+        if (valorReferencia == null)
             return;
-        Integer v = leerValor();
-        if (v == null) {
-            txtValor1.setText(String.valueOf(ref));
+        Integer valorAInsertar = leerValor();
+        if (valorAInsertar == null) {
+            txtValor1.setText(String.valueOf(valorReferencia));
             return;
         }
-        if (lista.insertarDespues(ref, v)) {
+        if (lista.insertarDespues(valorReferencia, valorAInsertar)) {
             actualizarVista();
-            exito("Se inserto " + v + " despues de " + ref + ".");
+            exito("Se inserto " + valorAInsertar + " despues de " + valorReferencia + ".");
         } else {
-            error(lista.estaVacia() ? "La lista esta vacia." : "La referencia " + ref + " no esta en la lista.");
+            error(lista.estaVacia() ? "La lista esta vacia." : "La referencia " + valorReferencia + " no esta en la lista.");
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-                if (lista == null)
+        // Evento: Eliminar nodo con el valor de la referencia
+        if (lista == null)
             return;
-        Integer ref = leerEntero(txtValor1);
-        if (ref == null)
+        Integer valorReferencia = leerEntero(txtValor1);
+        if (valorReferencia == null)
             return;
         if (lista.estaVacia()) {
             error("La lista esta vacia.");
-        } else if (lista.eliminarValor(ref)) {
+        } else if (lista.eliminarValor(valorReferencia)) {
             actualizarVista();
-            exito("Se elimino la referencia " + ref + ".");
+            exito("Se elimino la referencia " + valorReferencia + ".");
         } else {
-            error("La referencia " + ref + " no esta en la lista.");
+            error("La referencia " + valorReferencia + " no esta en la lista.");
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
-                if (lista == null)
+        // Evento: Eliminar el nodo antes de la referencia
+        if (lista == null)
             return;
-        Integer ref = leerEntero(txtValor1);
-        if (ref == null)
+        Integer valorReferencia = leerEntero(txtValor1);
+        if (valorReferencia == null)
             return;
-        Integer r = lista.eliminarAntes(ref);
-        if (r != null) {
+        Integer valorEliminado = lista.eliminarAntes(valorReferencia);
+        if (valorEliminado != null) {
             actualizarVista();
-            exito("Se elimino " + r + " (estaba antes de " + ref + ").");
-        } else if (!lista.buscar(ref)) {
-            error(lista.estaVacia() ? "La lista esta vacia." : "La referencia " + ref + " no esta en la lista.");
+            exito("Se elimino " + valorEliminado + " (estaba antes de " + valorReferencia + ").");
+        } else if (!lista.buscar(valorReferencia)) {
+            error(lista.estaVacia() ? "La lista esta vacia." : "La referencia " + valorReferencia + " no esta en la lista.");
         } else {
-            error("No hay ningun nodo antes de " + ref + ".");
+            error("No hay ningun nodo antes de " + valorReferencia + ".");
         }
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+        // Evento: Eliminar el nodo despues de la referencia
         if (lista == null)
             return;
-        Integer ref = leerEntero(txtValor1);
-        if (ref == null)
+        Integer valorReferencia = leerEntero(txtValor1);
+        if (valorReferencia == null)
             return;
-        Integer r = lista.eliminarDespues(ref);
-        if (r != null) {
+        Integer valorEliminado = lista.eliminarDespues(valorReferencia);
+        if (valorEliminado != null) {
             actualizarVista();
-            exito("Se elimino " + r + " (estaba despues de " + ref + ").");
-        } else if (!lista.buscar(ref)) {
-            error(lista.estaVacia() ? "La lista esta vacia." : "La referencia " + ref + " no esta en la lista.");
+            exito("Se elimino " + valorEliminado + " (estaba despues de " + valorReferencia + ").");
+        } else if (!lista.buscar(valorReferencia)) {
+            error(lista.estaVacia() ? "La lista esta vacia." : "La referencia " + valorReferencia + " no esta en la lista.");
         } else {
-            error("No hay ningun nodo despues de " + ref + ".");
+            error("No hay ningun nodo despues de " + valorReferencia + ".");
         }
     }//GEN-LAST:event_jButton6ActionPerformed
 
@@ -625,81 +625,87 @@ public class PanelTipoLista extends javax.swing.JPanel {
     }// GEN-LAST:event_txtValorActionPerformed
 
     private void btnInsIniActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnInsIniActionPerformed
+        // Evento: Insertar al inicio de la lista
         if (lista == null)
             return;
-        Integer v = leerValor();
-        if (v == null)
+        Integer valorAInsertar = leerValor();
+        if (valorAInsertar == null)
             return;
-        lista.insertarInicio(v);
+        lista.insertarInicio(valorAInsertar);
         actualizarVista();
-        exito("Se inserto " + v + " al inicio.");
+        exito("Se inserto " + valorAInsertar + " al inicio.");
     }// GEN-LAST:event_btnInsIniActionPerformed
 
     private void btnInsFinActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnInsFinActionPerformed
+        // Evento: Insertar al final de la lista
         if (lista == null)
             return;
-        Integer v = leerValor();
-        if (v == null)
+        Integer valorAInsertar = leerValor();
+        if (valorAInsertar == null)
             return;
-        lista.insertarFinal(v);
+        lista.insertarFinal(valorAInsertar);
         actualizarVista();
-        exito("Se inserto " + v + " al final.");
+        exito("Se inserto " + valorAInsertar + " al final.");
     }// GEN-LAST:event_btnInsFinActionPerformed
 
     private void btnElimIniActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnElimIniActionPerformed
+        // Evento: Eliminar el primer elemento de la lista
         if (lista == null)
             return;
-        Integer r = lista.eliminarInicio();
+        Integer valorEliminado = lista.eliminarInicio();
         actualizarVista();
-        if (r == null) {
+        if (valorEliminado == null) {
             error("La lista esta vacia.");
         } else {
-            exito("Se elimino el valor del inicio: " + r);
+            exito("Se elimino el valor del inicio: " + valorEliminado);
         }
     }// GEN-LAST:event_btnElimIniActionPerformed
 
     private void btnElimFinActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnElimFinActionPerformed
+        // Evento: Eliminar el ultimo elemento de la lista
         if (lista == null)
             return;
-        Integer r = lista.eliminarFinal();
+        Integer valorEliminado = lista.eliminarFinal();
         actualizarVista();
-        if (r == null) {
+        if (valorEliminado == null) {
             error("La lista esta vacia.");
         } else {
-            exito("Se elimino el valor del final: " + r);
+            exito("Se elimino el valor del final: " + valorEliminado);
         }
     }// GEN-LAST:event_btnElimFinActionPerformed
 
     private void btnElimValActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnElimValActionPerformed
+        // Evento: Eliminar por valor
         if (lista == null)
             return;
-        Integer v = leerValor();
-        if (v == null)
+        Integer valorAEliminar = leerValor();
+        if (valorAEliminar == null)
             return;
         if (lista.estaVacia()) {
             error("La lista esta vacia.");
-        } else if (lista.eliminarValor(v)) {
+        } else if (lista.eliminarValor(valorAEliminar)) {
             actualizarVista();
-            exito("Se elimino el valor " + v + ".");
+            exito("Se elimino el valor " + valorAEliminar + ".");
         } else {
-            error("El valor " + v + " no esta en la lista.");
+            error("El valor " + valorAEliminar + " no esta en la lista.");
         }
     }// GEN-LAST:event_btnElimValActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnBuscarActionPerformed
+        // Evento: Buscar valor en la lista
         if (lista == null)
             return;
-        Integer v = leerValor();
-        if (v == null)
+        Integer valorABuscar = leerValor();
+        if (valorABuscar == null)
             return;
-        if (lista.buscar(v)) {
-            int pos = lista.aLista().indexOf(v);
-            jList1.setSelectedIndex(pos);
-            jList1.ensureIndexIsVisible(pos);
-            exito("El valor " + v + " SI esta en la lista (posicion " + (pos + 1) + ").");
+        if (lista.buscar(valorABuscar)) {
+            int posicionElemento = lista.aLista().indexOf(valorABuscar);
+            jList1.setSelectedIndex(posicionElemento);
+            jList1.ensureIndexIsVisible(posicionElemento);
+            exito("El valor " + valorABuscar + " SI esta en la lista (posicion " + (posicionElemento + 1) + ").");
         } else {
             jList1.clearSelection();
-            error("El valor " + v + " NO esta en la lista.");
+            error("El valor " + valorABuscar + " NO esta en la lista.");
         }
     }// GEN-LAST:event_btnBuscarActionPerformed
 

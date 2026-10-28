@@ -3,241 +3,347 @@ package ListasDinamicas;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ============================================================================
+ * CLASE: ListaCircularSimple
+ * ============================================================================
+ * Implementacion de una Lista Circular Simple.
+ *
+ * Caracteristicas didacticas:
+ * - Cada nodo posee un solo enlace (liga) dirigido al nodo sucesor.
+ * - A diferencia de la lista lineal, el ultimo nodo NO apunta a null, sino
+ *   que su enlace apunta de regreso al primer nodo de la lista (formando un ciclo).
+ * - No existen enlaces con valor null; la lista es un anillo cerrado.
+ * - Se mantienen referencias tanto a 'primerNodo' como a 'ultimoNodo' para
+ *   operaciones eficientes en ambos extremos.
+ *
+ * @author eduardo-b
+ * ============================================================================
+ */
 public class ListaCircularSimple extends ListaDinamica {
 
+    /**
+     * Clase interna que define cada nodo de la lista circular simple.
+     */
     private static class Nodo {
         int info;
         Nodo liga;
 
-        Nodo(int info) {
-            this.info = info;
+        Nodo(int valorDato) {
+            this.info = valorDato;
             this.liga = null;
         }
     }
 
-    private Nodo P; // primer nodo
-    private Nodo U; // ultimo nodo (U.liga siempre apunta a P)
+    /**
+     * Apuntador al primer elemento del anillo enlazado.
+     */
+    private Nodo primerNodo;
 
+    /**
+     * Apuntador al ultimo elemento del anillo (su liga siempre apunta a primerNodo).
+     */
+    private Nodo ultimoNodo;
+
+    /**
+     * Constructor: inicializa la lista circular simple vacia.
+     */
     public ListaCircularSimple() {
-        this.P = null;
-        this.U = null;
+        this.primerNodo = null;
+        this.ultimoNodo = null;
     }
 
-        private Nodo buscarNodo(int ref) {
-        if (P == null) {
+    /**
+     * Busca en el ciclo el nodo que contiene el valor especificado.
+     *
+     * @param valorABuscar Valor entero de referencia.
+     * @return El nodo encontrado, o null si no se encuentra.
+     */
+    private Nodo buscarNodo(int valorABuscar) {
+        if (this.primerNodo == null) {
             return null;
         }
-        Nodo Q = P;
+
+        Nodo nodoActual = this.primerNodo;
         do {
-            if (Q.info == ref) {
-                return Q;
+            if (nodoActual.info == valorABuscar) {
+                return nodoActual;
             }
-            Q = Q.liga;
-        } while (Q != P);
+            nodoActual = nodoActual.liga;
+        } while (nodoActual != this.primerNodo);
+
         return null;
     }
 
+    /**
+     * Inserta un nuevo elemento antes de un nodo de referencia.
+     */
     @Override
-    public boolean insertarAntes(int ref, int valor) {
-        if (P == null) {
+    public boolean insertarAntes(int valorReferencia, int valorAInsertar) {
+        if (this.primerNodo == null) {
             return false;
         }
-        Nodo T = U;                          // T = anterior de Q
-        Nodo Q = P;
+
+        Nodo nodoAnterior = this.ultimoNodo;
+        Nodo nodoActual = this.primerNodo;
+
         do {
-            if (Q.info == ref) {
-                Nodo N = new Nodo(valor);
-                N.liga = Q;
-                T.liga = N;
-                if (Q == P) {                // antes del primero: N pasa a ser el primero
-                    P = N;
+            if (nodoActual.info == valorReferencia) {
+                Nodo nuevoNodo = new Nodo(valorAInsertar);
+                nuevoNodo.liga = nodoActual;
+                nodoAnterior.liga = nuevoNodo;
+
+                // Si se inserto antes del primer nodo, el nuevo pasa a ser la cabeza
+                if (nodoActual == this.primerNodo) {
+                    this.primerNodo = nuevoNodo;
                 }
                 return true;
             }
-            T = Q;
-            Q = Q.liga;
-        } while (Q != P);
+            nodoAnterior = nodoActual;
+            nodoActual = nodoActual.liga;
+        } while (nodoActual != this.primerNodo);
+
         return false;
     }
 
+    /**
+     * Inserta un nuevo elemento despues de un nodo de referencia.
+     */
     @Override
-    public boolean insertarDespues(int ref, int valor) {
-        Nodo Q = buscarNodo(ref);
-        if (Q == null) {
+    public boolean insertarDespues(int valorReferencia, int valorAInsertar) {
+        Nodo nodoReferencia = buscarNodo(valorReferencia);
+        if (nodoReferencia == null) {
             return false;
         }
-        Nodo N = new Nodo(valor);
-        N.liga = Q.liga;
-        Q.liga = N;
-        if (Q == U) {                        // despues del ultimo: N pasa a ser el ultimo
-            U = N;
+
+        Nodo nuevoNodo = new Nodo(valorAInsertar);
+        nuevoNodo.liga = nodoReferencia.liga;
+        nodoReferencia.liga = nuevoNodo;
+
+        // Si se inserto despues del ultimo nodo, el nuevo pasa a ser el ultimo
+        if (nodoReferencia == this.ultimoNodo) {
+            this.ultimoNodo = nuevoNodo;
         }
         return true;
     }
 
+    /**
+     * Elimina el nodo que se encuentra antes del nodo de referencia.
+     */
     @Override
-    public Integer eliminarAntes(int ref) {
-        Nodo Q = buscarNodo(ref);
-        if (Q == null || P == U) {           // no existe, o solo hay un nodo
+    public Integer eliminarAntes(int valorReferencia) {
+        Nodo nodoReferencia = buscarNodo(valorReferencia);
+        // Si no existe o solo hay un nodo en el ciclo, no se puede eliminar el previo
+        if (nodoReferencia == null || this.primerNodo == this.ultimoNodo) {
             return null;
         }
-        Nodo X = Q;                          // X = nodo que esta 2 antes de Q
-        while (X.liga.liga != Q) {
-            X = X.liga;
+
+        // Buscar el nodo que esta dos posiciones atras del nodo de referencia
+        Nodo nodoDosPosicionesAtras = nodoReferencia;
+        while (nodoDosPosicionesAtras.liga.liga != nodoReferencia) {
+            nodoDosPosicionesAtras = nodoDosPosicionesAtras.liga;
         }
-        Nodo A = X.liga;                     // A = el nodo que se elimina
-        X.liga = Q;
-        if (A == P) {
-            P = Q;
+
+        Nodo nodoAEliminar = nodoDosPosicionesAtras.liga;
+        nodoDosPosicionesAtras.liga = nodoReferencia;
+
+        if (nodoAEliminar == this.primerNodo) {
+            this.primerNodo = nodoReferencia;
         }
-        if (A == U) {
-            U = X;
+        if (nodoAEliminar == this.ultimoNodo) {
+            this.ultimoNodo = nodoDosPosicionesAtras;
         }
-        return A.info;
+
+        return nodoAEliminar.info;
     }
 
+    /**
+     * Elimina el nodo que se encuentra despues del nodo de referencia.
+     */
     @Override
-    public Integer eliminarDespues(int ref) {
-        Nodo Q = buscarNodo(ref);
-        if (Q == null || P == U) {
+    public Integer eliminarDespues(int valorReferencia) {
+        Nodo nodoReferencia = buscarNodo(valorReferencia);
+        if (nodoReferencia == null || this.primerNodo == this.ultimoNodo) {
             return null;
         }
-        Nodo S = Q.liga;                     // el nodo que se elimina
-        Q.liga = S.liga;
-        if (S == P) {
-            P = S.liga;
+
+        Nodo nodoAEliminar = nodoReferencia.liga;
+        nodoReferencia.liga = nodoAEliminar.liga;
+
+        if (nodoAEliminar == this.primerNodo) {
+            this.primerNodo = nodoAEliminar.liga;
         }
-        if (S == U) {
-            U = Q;
+        if (nodoAEliminar == this.ultimoNodo) {
+            this.ultimoNodo = nodoReferencia;
         }
-        return S.info;
-    }
-    
-    @Override
-    public void insertarInicio(int valor) {
-        Nodo Q = new Nodo(valor);
-        if (P == null) {
-            Q.liga = Q;
-            P = Q;
-            U = Q;
-            return;
-        }
-        Q.liga = P;
-        U.liga = Q;
-        P = Q;
+
+        return nodoAEliminar.info;
     }
 
+    /**
+     * Inserta un nuevo elemento al inicio del ciclo.
+     */
     @Override
-    public void insertarFinal(int valor) {
-        Nodo Q = new Nodo(valor);
-        if (P == null) {
-            Q.liga = Q;
-            P = Q;
-            U = Q;
+    public void insertarInicio(int valorAInsertar) {
+        Nodo nuevoNodo = new Nodo(valorAInsertar);
+        if (this.primerNodo == null) {
+            nuevoNodo.liga = nuevoNodo;
+            this.primerNodo = nuevoNodo;
+            this.ultimoNodo = nuevoNodo;
             return;
         }
-        Q.liga = P;
-        U.liga = Q;
-        U = Q;
+
+        nuevoNodo.liga = this.primerNodo;
+        this.ultimoNodo.liga = nuevoNodo;
+        this.primerNodo = nuevoNodo;
     }
 
+    /**
+     * Inserta un nuevo elemento al final del ciclo.
+     */
+    @Override
+    public void insertarFinal(int valorAInsertar) {
+        Nodo nuevoNodo = new Nodo(valorAInsertar);
+        if (this.primerNodo == null) {
+            nuevoNodo.liga = nuevoNodo;
+            this.primerNodo = nuevoNodo;
+            this.ultimoNodo = nuevoNodo;
+            return;
+        }
+
+        nuevoNodo.liga = this.primerNodo;
+        this.ultimoNodo.liga = nuevoNodo;
+        this.ultimoNodo = nuevoNodo;
+    }
+
+    /**
+     * Elimina el primer elemento del ciclo.
+     */
     @Override
     public Integer eliminarInicio() {
-        if (P == null) {
+        if (this.primerNodo == null) {
             return null;
         }
-        int valor = P.info;
-        if (P == U) {
-            P = null;
-            U = null;
+
+        int valorEliminado = this.primerNodo.info;
+        if (this.primerNodo == this.ultimoNodo) {
+            this.primerNodo = null;
+            this.ultimoNodo = null;
         } else {
-            P = P.liga;
-            U.liga = P;
+            this.primerNodo = this.primerNodo.liga;
+            this.ultimoNodo.liga = this.primerNodo;
         }
-        return valor;
+
+        return valorEliminado;
     }
 
+    /**
+     * Elimina el ultimo elemento del ciclo.
+     */
     @Override
     public Integer eliminarFinal() {
-        if (P == null) {
+        if (this.primerNodo == null) {
             return null;
         }
-        int valor = U.info;
-        if (P == U) {
-            P = null;
-            U = null;
-            return valor;
+
+        int valorEliminado = this.ultimoNodo.info;
+        if (this.primerNodo == this.ultimoNodo) {
+            this.primerNodo = null;
+            this.ultimoNodo = null;
+            return valorEliminado;
         }
-        Nodo T = P;
-        while (T.liga != U) {
-            T = T.liga;
+
+        // Buscar el penultimo nodo
+        Nodo nodoActual = this.primerNodo;
+        while (nodoActual.liga != this.ultimoNodo) {
+            nodoActual = nodoActual.liga;
         }
-        T.liga = P;
-        U = T;
-        return valor;
+
+        nodoActual.liga = this.primerNodo;
+        this.ultimoNodo = nodoActual;
+        return valorEliminado;
     }
 
+    /**
+     * Busca y elimina la primera coincidencia del valor solicitado en el ciclo.
+     */
     @Override
-    public boolean eliminarValor(int valor) {
-        if (P == null) {
+    public boolean eliminarValor(int valorAEliminar) {
+        if (this.primerNodo == null) {
             return false;
         }
-        Nodo T = U;   // anterior de Q
-        Nodo Q = P;
+
+        Nodo nodoAnterior = this.ultimoNodo;
+        Nodo nodoActual = this.primerNodo;
+
         do {
-            if (Q.info == valor) {
-                if (P == U) {          // era el unico nodo
-                    P = null;
-                    U = null;
+            if (nodoActual.info == valorAEliminar) {
+                if (this.primerNodo == this.ultimoNodo) {
+                    this.primerNodo = null;
+                    this.ultimoNodo = null;
                 } else {
-                    T.liga = Q.liga;
-                    if (Q == P) {
-                        P = Q.liga;
+                    nodoAnterior.liga = nodoActual.liga;
+                    if (nodoActual == this.primerNodo) {
+                        this.primerNodo = nodoActual.liga;
                     }
-                    if (Q == U) {
-                        U = T;
+                    if (nodoActual == this.ultimoNodo) {
+                        this.ultimoNodo = nodoAnterior;
                     }
                 }
                 return true;
             }
-            T = Q;
-            Q = Q.liga;
-        } while (Q != P);
+            nodoAnterior = nodoActual;
+            nodoActual = nodoActual.liga;
+        } while (nodoActual != this.primerNodo);
+
         return false;
     }
 
+    /**
+     * Comprueba si un valor entero existe dentro del ciclo.
+     */
     @Override
-    public boolean buscar(int valor) {
-        if (P == null) {
+    public boolean buscar(int valorABuscar) {
+        if (this.primerNodo == null) {
             return false;
         }
-        Nodo Q = P;
+
+        Nodo nodoActual = this.primerNodo;
         do {
-            if (Q.info == valor) {
+            if (nodoActual.info == valorABuscar) {
                 return true;
             }
-            Q = Q.liga;
-        } while (Q != P);
+            nodoActual = nodoActual.liga;
+        } while (nodoActual != this.primerNodo);
+
         return false;
     }
 
+    /**
+     * Comprueba si la lista circular esta vacia.
+     */
     @Override
     public boolean estaVacia() {
-        return P == null;
+        return this.primerNodo == null;
     }
 
+    /**
+     * Recorre todo el anillo de elementos una vez y los reune en una lista secuencial.
+     */
     @Override
     public List<Integer> aLista() {
-        List<Integer> res = new ArrayList<>();
-        if (P == null) {
-            return res;
+        List<Integer> listaValores = new ArrayList<>();
+        if (this.primerNodo == null) {
+            return listaValores;
         }
-        Nodo Q = P;
+
+        Nodo nodoActual = this.primerNodo;
         do {
-            res.add(Q.info);
-            Q = Q.liga;
-        } while (Q != P);
-        return res;
+            listaValores.add(nodoActual.info);
+            nodoActual = nodoActual.liga;
+        } while (nodoActual != this.primerNodo);
+
+        return listaValores;
     }
 
     @Override
