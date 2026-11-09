@@ -85,8 +85,8 @@ public class PanelBase extends javax.swing.JPanel {
         this.panelDibujoBase = new PanelDibujoBase();
         jScrollPane1.setViewportView(this.panelDibujoBase);
 
-        this.setPreferredSize(new Dimension(1920, 1080));
-        this.setSize(1920, 1080);
+        // Se configuran las propiedades dinámicas sin forzar dimensiones fijas de 1920x1080
+        // para permitir ajuste fluido en cualquier resolución de pantalla
         configurarSegunEstructura();
         actualizarVista();
     }
@@ -228,23 +228,6 @@ public class PanelBase extends javax.swing.JPanel {
         panelBloques = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
 
-        setPreferredSize(new java.awt.Dimension(1920, 1080));
-
-        jLabel1.setFont(new java.awt.Font("Monospaced", 1, 28)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Estructura Dinamica");
-
-        jTextField1.setFont(new java.awt.Font("SansSerif", 0, 16)); // NOI18N
-        jTextField1.addActionListener(this::jTextField1ActionPerformed);
-
-        jButton1.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jButton1.setText("Insertar");
-        jButton1.addActionListener(this::jButton1ActionPerformed);
-
-        jButton2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jButton2.setText("Eliminar");
-        jButton2.addActionListener(this::jButton2ActionPerformed);
-
         panelBloques.setBackground(new java.awt.Color(250, 250, 250));
         jScrollPane1.setViewportView(panelBloques);
 
@@ -254,12 +237,14 @@ public class PanelBase extends javax.swing.JPanel {
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
+        // Diseño horizontal: márgenes flexibles a la izquierda y derecha para garantizar
+        // que el contenedor principal y sus controles queden perfectamente centrados en cualquier monitor
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(460, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -267,26 +252,26 @@ public class PanelBase extends javax.swing.JPanel {
                         .addGap(18, 18, 18)
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(270, 270, 270)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(560, Short.MAX_VALUE))
+                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+        // Diseño vertical: jScrollPane1 se redimensiona dinámicamente con el alto de la ventana,
+        // asegurando que en pantallas pequeñas (e.g. 768p) el botón 'Volver al Menu' siempre sea visible
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addComponent(jLabel1)
                 .addGap(25, 25, 25)
+                .addComponent(jLabel1)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(20, 20, 20)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(25, 25, 25)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(368, Short.MAX_VALUE))
+                .addGap(25, 25, 25))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -327,8 +312,11 @@ public class PanelBase extends javax.swing.JPanel {
         java.awt.EventQueue.invokeLater(() -> {
             JFrame framePrueba = new JFrame("Prueba de PanelBase (Pila y Cola)");
             framePrueba.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            framePrueba.setSize(1200, 800);
+            // Configurar tamaño adaptativo, centrado y maximizado automático
+            framePrueba.setSize(1024, 700);
+            framePrueba.setMinimumSize(new java.awt.Dimension(900, 550));
             framePrueba.setLocationRelativeTo(null);
+            framePrueba.setExtendedState(JFrame.MAXIMIZED_BOTH);
             framePrueba.add(new PanelBase(null, new Pila()));
             framePrueba.setVisible(true);
         });

@@ -23,13 +23,51 @@ public class Ventana extends javax.swing.JFrame {
 
     /**
      * Constructor principal de Ventana.
+     * Inicializa componentes, paneles y configura el ajuste automatico
+     * a las dimensiones de la pantalla del usuario.
      */
     public Ventana() {
         initComponents();
         cardLayout = (CardLayout) panelContenedor.getLayout();
         inicializarPaneles();
-        this.setLocationRelativeTo(null);
+        configurarAjustePantalla();
         this.setVisible(true);
+    }
+
+    /**
+     * Configura la ventana para que se adapte de forma dinamica y precisa a la
+     * pantalla del usuario, sin importar su resolucion (1366x768, 1080p, 2K, 4K, etc.).
+     *
+     * Detecta el entorno grafico y los limites maximos utilizables (descontando
+     * barras de tareas y docks del sistema operativo), establece un tamaño
+     * minimo de seguridad, centra la ventana y la maximiza por defecto para
+     * ofrecer una experiencia uniforme y consistente en cualquier monitor.
+     */
+    private void configurarAjustePantalla() {
+        try {
+            // Obtener el entorno grafico local y los limites reales utilizables de la pantalla
+            java.awt.GraphicsEnvironment entornoGrafico = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment();
+            java.awt.Rectangle limitesPantalla = entornoGrafico.getMaximumWindowBounds();
+
+            // Asignar limites y dimension preferida segun la pantalla disponible
+            this.setBounds(limitesPantalla);
+            this.setPreferredSize(new java.awt.Dimension(limitesPantalla.width, limitesPantalla.height));
+
+            // Dimension minima para garantizar que los componentes no se encimen en resoluciones bajas
+            this.setMinimumSize(new java.awt.Dimension(1024, 600));
+
+            // Maximizar la ventana para ocupar toda la pantalla disponible del usuario
+            this.setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
+        } catch (Exception excepcionPantalla) {
+            // En caso de entornos que no soporten consultar limites graficos, usar Toolkit por defecto
+            java.awt.Dimension dimensionToolkit = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+            this.setSize(dimensionToolkit);
+            this.setPreferredSize(dimensionToolkit);
+            this.setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
+        }
+
+        // Asegurar que la ventana quede perfectamente centrada en la pantalla
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -81,7 +119,7 @@ public class Ventana extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Pilas, Colas y Listas Dinamicas");
-        setPreferredSize(new java.awt.Dimension(1920, 1080));
+        setMinimumSize(new java.awt.Dimension(1024, 600));
 
         panelContenedor.setLayout(new java.awt.CardLayout());
 
@@ -111,29 +149,29 @@ public class Ventana extends javax.swing.JFrame {
         panelMenuLayout.setHorizontalGroup(
             panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelMenuLayout.createSequentialGroup()
-                .addContainerGap(635, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(lblTitulo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblSubtitulo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnCola, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
                     .addComponent(btnPila, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
                     .addComponent(btnLista, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE))
-                .addContainerGap(635, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelMenuLayout.setVerticalGroup(
             panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelMenuLayout.createSequentialGroup()
-                .addGap(160, 160, 160)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblTitulo)
                 .addGap(15, 15, 15)
                 .addComponent(lblSubtitulo)
-                .addGap(50, 50, 50)
-                .addComponent(btnCola, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addComponent(btnPila, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addComponent(btnLista, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(200, Short.MAX_VALUE))
+                .addGap(45, 45, 45)
+                .addComponent(btnCola, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25)
+                .addComponent(btnPila, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25)
+                .addComponent(btnLista, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         panelContenedor.add(panelMenu, "Menu");
@@ -142,11 +180,11 @@ public class Ventana extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelContenedor, javax.swing.GroupLayout.DEFAULT_SIZE, 1920, Short.MAX_VALUE)
+            .addComponent(panelContenedor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelContenedor, javax.swing.GroupLayout.DEFAULT_SIZE, 1080, Short.MAX_VALUE)
+            .addComponent(panelContenedor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
