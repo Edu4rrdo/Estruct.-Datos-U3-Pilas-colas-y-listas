@@ -292,8 +292,6 @@ public class PanelTipoLista extends javax.swing.JPanel {
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
-        // Diseño horizontal responsivo: márgenes flexibles a la izquierda y derecha
-        // para mantener todos los controles, bloques y botones centrados en cualquier resolución
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
@@ -344,8 +342,6 @@ public class PanelTipoLista extends javax.swing.JPanel {
                         .addComponent(btnMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        // Diseño vertical responsivo: el panel de bloques y la lista textual se expanden dinámicamente
-        // para aprovechar la altura de la pantalla sin ocultar los botones de navegación
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()

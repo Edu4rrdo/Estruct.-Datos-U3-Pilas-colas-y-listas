@@ -228,6 +228,21 @@ public class PanelBase extends javax.swing.JPanel {
         panelBloques = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
 
+        jLabel1.setFont(new java.awt.Font("Monospaced", 1, 28)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Estructura Dinamica");
+
+        jTextField1.setFont(new java.awt.Font("SansSerif", 0, 16)); // NOI18N
+        jTextField1.addActionListener(this::jTextField1ActionPerformed);
+
+        jButton1.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        jButton1.setText("Insertar");
+        jButton1.addActionListener(this::jButton1ActionPerformed);
+
+        jButton2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        jButton2.setText("Eliminar");
+        jButton2.addActionListener(this::jButton2ActionPerformed);
+
         panelBloques.setBackground(new java.awt.Color(250, 250, 250));
         jScrollPane1.setViewportView(panelBloques);
 
@@ -237,8 +252,6 @@ public class PanelBase extends javax.swing.JPanel {
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
-        // Diseño horizontal: márgenes flexibles a la izquierda y derecha para garantizar
-        // que el contenedor principal y sus controles queden perfectamente centrados en cualquier monitor
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
@@ -255,8 +268,6 @@ public class PanelBase extends javax.swing.JPanel {
                     .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        // Diseño vertical: jScrollPane1 se redimensiona dinámicamente con el alto de la ventana,
-        // asegurando que en pantallas pequeñas (e.g. 768p) el botón 'Volver al Menu' siempre sea visible
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
